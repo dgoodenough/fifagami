@@ -30,6 +30,7 @@ import csv
 import json
 import sys
 import urllib.request
+from collections import deque
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from xml.sax.saxutils import escape as xml_escape
@@ -651,6 +652,217 @@ def rfc822(iso_day: str) -> str:
             f"00:00:00 +0000")
 
 
+# --- Derived artifact: the fact strip -----------------------------------------
+# The grid answers "have these two ever played?" but it opens on a number, and a number
+# is not a reason to keep reading. These are the lines worth repeating, computed from the
+# archives so they cannot go stale, each one pointing at the view that proves it.
+def build_facts(members: list[dict], matrices: dict, details: dict) -> list[dict]:
+    by_id = {m["id"]: m for m in members}
+    ids = [m["id"] for m in members]
+    n = len(ids)
+    possible = n * (n - 1) // 2
+
+    counts = {g: {(p[0], p[1]): p[2] for p in matrices[g]["pairs"]} for g in ("men", "women")}
+    first_year = {g: {(p[0], p[1]): p[3] for p in matrices[g]["pairs"]} for g in ("men", "women")}
+    key = lambda a, b: (min(a, b), max(a, b))
+    name = lambda i: by_id[i]["name"]
+
+    opponents = {g: {i: set() for i in ids} for g in ("men", "women")}
+    for g in ("men", "women"):
+        for a, b in counts[g]:
+            opponents[g][a].add(b)
+            opponents[g][b].add(a)
+
+    facts: list[dict] = []
+
+    def add(stat, text, url, archive="men", never=()):
+        """never: pairs this fact asserts have not played, as [id, id].
+
+        Recorded rather than left implied in the prose: these claims expire the moment two
+        teams finally meet, and tests/test_build.py re-checks them against the archive on
+        every build. Parsing the sentence instead would be guesswork."""
+        facts.append({"stat": stat, "text": text, "url": url, "archive": archive,
+                      "never": [[min(a, b), max(a, b)] for a, b in never]})
+
+    # 1. Elite pairs that have never met. The rank cut is arbitrary; the point is that
+    #    these are teams everyone has heard of.
+    CUT = 40
+    elite = [m for m in members if (m["mens_rank"] or 999) <= CUT]
+    unmet = []
+    for i, a in enumerate(elite):
+        for b in elite[i + 1:]:
+            if key(a["id"], b["id"]) not in counts["men"]:
+                unmet.append((a["mens_rank"] + b["mens_rank"], a, b))
+    if unmet:
+        unmet.sort(key=lambda t: t[0])
+        _, a, b = unmet[0]
+        add(str(len(unmet)),
+            f"pairs of top-{CUT} men's teams have never played each other. "
+            f"{a['name']} are ranked {a['mens_rank']} in the world and {b['name']} "
+            f"{b['mens_rank']}, and they have never met.",
+            f"?pair={min(a['id'], b['id'])},{max(a['id'], b['id'])}",
+            never=[(a["id"], b["id"])])
+
+    # 2. The oldest fixture that happened once and never again.
+    ones = sorted(((first_year["men"][k], k) for k, c in counts["men"].items() if c == 1))
+    if ones:
+        year, k = ones[0]
+        detail = details["men"].get(f"{k[0]},{k[1]}") or []
+        score = ""
+        if len(detail) == 1 and len(detail[0]) >= 3:
+            score = f" It finished {detail[0][1]}-{detail[0][2]}."
+        add(str(year),
+            f"{name(k[0])} played {name(k[1])}, and neither has played the other since."
+            f"{score} It is the oldest fixture in international football still waiting on "
+            f"a rematch.",
+            "?view=oneoffs")
+
+    # 3. How many pairs have met exactly once, ever.
+    n_once = sum(1 for c in counts["men"].values() if c == 1)
+    add(f"{n_once:,}",
+        "men's pairings have been played exactly once in the history of the game. One "
+        "match, no rematch.",
+        "?view=oneoffs")
+
+    # 4. Degrees of separation. Most of the grid is empty and the graph is still tiny.
+    adj = {i: opponents["men"][i] for i in ids}
+    diameter, longest = 0, None
+    for src in ids:
+        dist = {src: 0}
+        queue = deque([src])
+        while queue:
+            u = queue.popleft()
+            for v in adj[u]:
+                if v not in dist:
+                    dist[v] = dist[u] + 1
+                    if dist[v] > diameter:
+                        diameter, longest = dist[v], (src, v)
+                    queue.append(v)
+    if longest:
+        # The bound on its own is abstract. Walk it: the team with the fewest opponents to
+        # the best-ranked team it has never played, which is the version people repeat.
+        lonely = min(ids, key=lambda i: len(adj[i]))
+        never = [i for i in ids
+                 if i != lonely and i not in adj[lonely] and by_id[i]["mens_rank"]]
+        if never:
+            target = min(never, key=lambda i: by_id[i]["mens_rank"])
+            chain = _shortest_chain(adj, lonely, target)
+            if chain:
+                hops = len(chain) - 1
+                via = ", which has played ".join(name(i) for i in chain[1:])
+                add(str(hops),
+                    f"matches separate {name(lonely)} from {name(target)}, the number "
+                    f"{by_id[target]['mens_rank']} team in the world. They have never met. "
+                    f"But {name(lonely)} has played {via}. No two national teams anywhere "
+                    f"are more than {diameter} such steps apart.",
+                    f"?view=path&path={lonely},{target}",
+                    never=[(lonely, target)])
+
+    # 5. The loneliest team in the archive.
+    lonely = min(ids, key=lambda i: len(opponents["men"][i]))
+    add(str(len(opponents["men"][lonely])),
+        f"countries is the complete list of opponents {name(lonely)} has faced since its "
+        f"first international. The other {n - 1 - len(opponents['men'][lonely])} FIFA "
+        f"members it has never played.",
+        f"?teams={lonely}")
+
+    # 6. The most-played fixture in the world.
+    top = sorted(counts["men"].items(), key=lambda kv: -kv[1])
+    if top:
+        k, c = top[0]
+        add(f"{c:,}",
+            f"meetings between {name(k[0])} and {name(k[1])} since "
+            f"{first_year['men'][k]} — the most-played fixture in international football.",
+            f"?pair={k[0]},{k[1]}")
+
+    # 7. The most-played fixture nobody outside it talks about: the highest count with
+    #    neither side in UEFA or CONMEBOL.
+    loud = {"UEFA", "CONMEBOL"}
+    for k, c in top:
+        if by_id[k[0]]["confed"] not in loud and by_id[k[1]]["confed"] not in loud:
+            # Counts tie near the top of this list, so rank it by band rather than by
+            # position: "5th" would reshuffle between two teams on the same number.
+            ahead = sum(1 for _, other in top if other > c) + 1
+            band = next(b for b in ("five", "ten", "twenty", "fifty")
+                        if ahead <= {"five": 5, "ten": 10, "twenty": 20, "fifty": 50}[b])
+            add(f"{c:,}",
+                f"meetings between {name(k[0])} and {name(k[1])} since "
+                f"{first_year['men'][k]}, which puts it among the {band} most-played "
+                f"fixtures in international football and makes it the most-played outside "
+                f"Europe and South America.",
+                f"?pair={k[0]},{k[1]}")
+            break
+
+    # 8. Never met, despite sharing most of a fixture list.
+    near = []
+    for i, a in enumerate(ids):
+        for b in ids[i + 1:]:
+            if key(a, b) in counts["men"]:
+                continue
+            shared = len(opponents["men"][a] & opponents["men"][b])
+            if shared >= 60:
+                near.append((shared, a, b))
+    if near:
+        near.sort(key=lambda t: (-t[0], t[1], t[2]))
+        shared, a, b = near[0]
+        add(str(shared),
+            f"opponents are on both {name(a)}'s and {name(b)}'s record. The two have "
+            f"never played each other.",
+            "?view=misses", never=[(a, b)])
+
+    # 9. The women's archive is a much emptier grid.
+    w_played = len(counts["women"])
+    add(f"{100 * w_played / possible:.0f}%",
+        f"of the {possible:,} possible women's international pairings have ever been "
+        f"played, against {100 * len(counts['men']) / possible:.0f}% of the men's. The "
+        f"women's grid is mostly still blank.",
+        "?g=women", archive="women")
+
+    # 10. Members with no women's international at all.
+    none_w = sorted(name(i) for i in ids if not opponents["women"][i])
+    if none_w:
+        add(str(len(none_w)),
+            "FIFA members have never played a women's international at all: "
+            + ", ".join(none_w[:-1]) + f" and {none_w[-1]}.",
+            "?g=women", archive="women")
+
+    return facts
+
+
+def _shortest_chain(adj: dict, a: int, b: int) -> list[int]:
+    """Breadth-first path between two teams through matches actually played."""
+    if a == b:
+        return [a]
+    prev = {a: None}
+    queue = deque([a])
+    while queue:
+        u = queue.popleft()
+        for v in adj[u]:
+            if v in prev:
+                continue
+            prev[v] = u
+            if v == b:
+                path = [v]
+                while prev[path[-1]] is not None:
+                    path.append(prev[path[-1]])
+                return path[::-1]
+            queue.append(v)
+    return []
+
+
+def write_facts() -> int:
+    """Read the built artifacts back and write docs/data/facts.json."""
+    members = json.loads((OUT / "members.json").read_text(encoding="utf-8"))["members"]
+    matrices = {g: json.loads((OUT / f"matrix_{g}.json").read_text(encoding="utf-8"))
+                for g in ("men", "women")}
+    details = {g: json.loads((OUT / f"matches_{g}.json").read_text(encoding="utf-8"))["pairs"]
+               for g in ("men", "women")}
+    facts = build_facts(members, matrices, details)
+    (OUT / "facts.json").write_text(
+        json.dumps({"facts": facts}, ensure_ascii=False), encoding="utf-8")
+    return len(facts)
+
+
 # --- Validation --------------------------------------------------------------
 class BuildError(AssertionError):
     """An artifact is wrong enough that it must not be published."""
@@ -793,6 +1005,8 @@ def derive_only() -> int:
     n_feed = write_feeds(members_doc["members"], upcoming, generated)
     log(f"  feed.json + feed.xml: {n_feed} upcoming first-ever meetings")
 
+    log(f"  facts.json: {write_facts()} facts")
+
     for note in validate_artifacts():
         log(f"  note: {note}")
     log("\nDerived artifacts OK.")
@@ -926,6 +1140,10 @@ def main() -> int:
     # project can notify rather than wait to be visited.
     n_feed = write_feeds(members, upcoming_json, generated)
 
+    # The lines worth repeating, derived from the archives just written so they refresh
+    # with the data instead of being hand-maintained prose that quietly goes wrong.
+    n_facts = write_facts()
+
     # --- Report ---
     log("")
     log(f"  members:          {len(members)}")
@@ -944,6 +1162,7 @@ def main() -> int:
     log(f"  meeting years (lazy-loaded for the scrubber): "
         f"men {y_men} / {ym_kb:.0f} KB, women {y_wom} / {yw_kb:.0f} KB")
     log(f"  feed.json + feed.xml: {n_feed} upcoming first-ever meetings")
+    log(f"  facts.json: {n_facts} facts")
     id_to_name = {m["id"]: m["name"] for m in members}
     log(f"  upcoming FIFAGami (scheduled first meetings): "
         f"men {len(upcoming_json['men'])}, women {len(upcoming_json['women'])}")

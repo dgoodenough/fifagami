@@ -1654,6 +1654,54 @@ function renderPath() {
   $("path-b").onchange = e => { S.path.b = +e.target.value; renderPath(); updateHeadline(); writeUrl(); };
 }
 
+/* ---------- fact strip ----------
+   A number on its own is not a reason to keep reading. facts.json is built alongside the
+   matrices (see build_facts in build.py), so these refresh with the data instead of being
+   hand-written prose that quietly goes out of date. One at a time, shuffled per visit, and
+   each one links at the view that proves it. */
+const FACTS = { list: [], at: 0 };
+
+async function loadFacts() {
+  let facts;
+  try {
+    facts = (await fetch("data/facts.json" + VBUST).then(r => r.json())).facts;
+  } catch {
+    return;                       // an older build has no facts.json; the strip stays hidden
+  }
+  if (!Array.isArray(facts) || !facts.length) return;
+  // Shuffled, so a returning visitor is not met by the same line every time.
+  for (let i = facts.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [facts[i], facts[j]] = [facts[j], facts[i]];
+  }
+  FACTS.list = facts;
+  FACTS.at = 0;
+  $("fact-next").onclick = () => showFact(FACTS.at + 1);
+  showFact(0);
+}
+
+function showFact(i) {
+  const strip = $("factstrip");
+  if (!FACTS.list.length) return;
+  FACTS.at = ((i % FACTS.list.length) + FACTS.list.length) % FACTS.list.length;
+  const f = FACTS.list[FACTS.at];
+  const paint = () => {
+    $("fact").innerHTML = `<span class="fact-stat">${esc(f.stat)}</span>${esc(f.text)}`;
+    $("fact-link").href = f.url;
+    strip.classList.remove("swapping");
+  };
+  // Only fade when there is something to fade from.
+  if (strip.hidden) { paint(); } else { strip.classList.add("swapping"); setTimeout(paint, 180); }
+  syncFactStrip();
+}
+
+/* The list views open with their own standfirst explaining what is in them, so the strip
+   would be a second competing explanation. Keep it to the grid, which is the landing. */
+function syncFactStrip() {
+  const strip = $("factstrip");
+  if (strip) strip.hidden = !FACTS.list.length || S.view !== "grid";
+}
+
 /* ---------- headline ---------- */
 function updateStats() { updateHeadline(); }
 
@@ -1800,10 +1848,12 @@ function headlinePath(headline) {
 
 /* ---------- views ---------- */
 function defaultView() {
-  const anyFixtures = S.upcoming.men.size + S.upcoming.women.size > 0;
-  // On a phone the 211-column grid is something you deliberately zoom into, not a landing
-  // page. Lead with the feed — unless there is nothing in it.
-  return (mqMobile.matches && anyFixtures) ? "fixtures" : "grid";
+  // Phones used to land on the fixtures feed, on the theory that a 211-column matrix is
+  // something you zoom into rather than arrive at. But the grid is what the share card
+  // shows and what the link promises, and it does fit a phone: the labels shrink with the
+  // cells and Fit fills the width. Landing anywhere else hid the whole point from the
+  // majority of visitors, who arrive on a phone.
+  return "grid";
 }
 
 function applyView(view, { push = true, focus = true } = {}) {
@@ -1820,6 +1870,7 @@ function applyView(view, { push = true, focus = true } = {}) {
     b.tabIndex = on ? 0 : -1;
   });
   document.body.dataset.view = view;
+  syncFactStrip();
   /* The fixtures feed deliberately lists both games in labelled groups, so the dataset
      toggle has nothing to change there. It used to sit enabled and do nothing, which reads
      as a broken control and teaches people to distrust the others. Disable it and say why —
@@ -2210,3 +2261,6 @@ load().catch(err => {
   if (el) el.textContent = "Failed to load data: " + err.message;
   console.error(err);
 });
+// Separate from load(): the grid must not wait on the fact strip, and a missing or
+// malformed facts.json should cost the page nothing.
+loadFacts();

@@ -63,7 +63,10 @@
    palette against document.documentElement and properties set on <body> do not reach it. */
 .ledger-light {
   --never: var(--paper);
-  --never-hi: #d8b3ad;
+  /* Deeper than the old #d8b3ad, which sat so close to the paper that the empties read
+     as blank rather than as the subject. The never-played mass has to carry the same
+     weight here as it does in the dark theme; it is the point of the picture. */
+  --never-hi: #c4705f;
   --diag: #b9b6ae;
   --crosshair: rgba(0, 0, 0, .10);
   --band-strip-ink: #ffffff;
@@ -499,3 +502,40 @@ body[data-never="1"] #sw-never { background: var(--never-hi); border-color: var(
   /* The timeline belongs to the grid; it should not sit above a list view. */
   body:not([data-view="grid"]) #timeline-slot #timeline { display: none; }
 }
+
+/* ---- fact strip -------------------------------------------------------------
+   The headline prints a number; this prints the reason to care about it. One fact
+   at a time, drawn from docs/data/facts.json, each pointing at the view that proves
+   it. Sits directly under the headline so it is read before the controls are. */
+#factstrip {
+  flex: none; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  padding: 9px 22px; background: var(--paper); color: var(--ink);
+  border-bottom: 1px solid var(--grid-strong);
+}
+#fact { margin: 0; flex: 1 1 34ch; font-size: .9rem; line-height: 1.45; }
+#fact .fact-stat {
+  font-weight: 800; color: var(--neg); font-variant-numeric: tabular-nums;
+  letter-spacing: -.2px; margin-right: .35em;
+}
+.fact-tools { display: flex; align-items: center; gap: 8px; flex: none; }
+#fact-link {
+  font-size: .8rem; font-weight: 600; white-space: nowrap;
+  border: 1px solid var(--pos); border-radius: var(--radius); padding: 3px 11px;
+  text-decoration: none; color: var(--pos);
+}
+#fact-link:hover { background: var(--pos); color: var(--chrome); }
+#fact-next {
+  font: inherit; font-size: .8rem; white-space: nowrap; cursor: pointer;
+  background: none; color: var(--ink-2);
+  border: 1px solid var(--grid-strong); border-radius: var(--radius); padding: 3px 10px;
+}
+#fact-next:hover { color: var(--ink); border-color: var(--ink-2); }
+/* The strip is the hook on a phone, where it is the only prose above the fold. */
+@media (max-width: 760px) {
+  #factstrip { padding: 9px 16px; gap: 9px; }
+  #fact { font-size: .84rem; flex-basis: 100%; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  #fact { transition: opacity .18s ease; }
+}
+#factstrip.swapping #fact { opacity: 0; }

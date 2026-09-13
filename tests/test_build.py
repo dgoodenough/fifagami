@@ -301,5 +301,99 @@ class TestStories(unittest.TestCase):
                          "every team that has played anyone should be reachable")
 
 
+class TestFacts(unittest.TestCase):
+    """facts.json is generated prose committed by a daily robot that nobody reads.
+
+    A fact that has quietly become false is worse than no fact at all, so every claim is
+    re-derived here from the matrices rather than trusted."""
+
+    def setUp(self):
+        self.facts = load("facts.json")["facts"]
+        self.members = load("members.json")["members"]
+        self.by_id = {m["id"]: m for m in self.members}
+        self.counts = {
+            g: {(p[0], p[1]): p[2] for p in load(f"matrix_{g}.json")["pairs"]}
+            for g in ("men", "women")
+        }
+
+    def test_the_strip_has_something_to_show(self):
+        self.assertGreaterEqual(len(self.facts), 6, "too few facts to be worth rotating")
+        for f in self.facts:
+            self.assertTrue(f["stat"] and f["text"], f"empty fact: {f}")
+            self.assertIn(f["archive"], ("men", "women"), f"unknown archive: {f}")
+            self.assertTrue(f["text"].endswith("."), f"fact should be a sentence: {f}")
+            self.assertLess(len(f["text"]), 260, f"too long for the strip: {f}")
+
+    def test_every_fact_links_somewhere_the_app_understands(self):
+        """A fact whose link 404s or lands on the wrong view is a broken promise."""
+        known = {"view", "pair", "teams", "path", "g", "never", "up", "confed",
+                 "sort", "year", "defunct"}
+        views = {"grid", "fixtures", "oneoffs", "misses", "path"}
+        for f in self.facts:
+            self.assertTrue(f["url"].startswith("?"), f"not a query link: {f['url']}")
+            for part in f["url"][1:].split("&"):
+                key, _, val = part.partition("=")
+                self.assertIn(key, known, f"app.js does not read ?{key}= ({f['url']})")
+                if key == "view":
+                    self.assertIn(val, views, f"unknown view in {f['url']}")
+                if key in ("pair", "path"):
+                    for tid in val.split(","):
+                        self.assertIn(int(tid), self.by_id, f"unknown team in {f['url']}")
+                if key == "teams":
+                    self.assertIn(int(val), self.by_id, f"unknown team in {f['url']}")
+
+    def test_pair_links_agree_with_the_matrix(self):
+        """Each ?pair= fact names a meeting count or a never-met; check the archive."""
+        for f in self.facts:
+            if not f["url"].startswith("?pair="):
+                continue
+            lo, hi = (int(x) for x in f["url"].split("=", 1)[1].split(","))
+            played = self.counts["men"].get((min(lo, hi), max(lo, hi)), 0)
+            names = (self.by_id[lo]["name"], self.by_id[hi]["name"])
+            for n in names:
+                self.assertIn(n, f["text"], f"{f['text']!r} should name {n}")
+            if "never" in f["text"]:
+                self.assertEqual(played, 0, f"claims never met, but they have: {f['text']}")
+            else:
+                self.assertEqual(f"{played:,}", f["stat"],
+                                 f"stat disagrees with the matrix: {f['text']}")
+
+    def test_the_never_played_claims_are_still_true(self):
+        """Teams meet. A fact built on 'these two have never played' has a shelf life.
+
+        Each fact records the pairs it asserts have not met, so this re-checks the claim
+        against the archive instead of trying to read it back out of the sentence."""
+        checked = 0
+        for f in self.facts:
+            for a, b in f["never"]:
+                # assertTrue, not assertNotIn: a failed assertNotIn would dump the whole
+                # 6,520-entry counts dict into the report.
+                self.assertTrue(
+                    (a, b) not in self.counts[f["archive"]],
+                    f"{self.by_id[a]['name']} and {self.by_id[b]['name']} have now played "
+                    f"({f['archive']}'s); this fact is out of date: {f['text']}")
+                # A recorded pair that is not actually named in the prose means the claim
+                # and the sentence have drifted apart.
+                for tid in (a, b):
+                    self.assertIn(self.by_id[tid]["name"], f["text"],
+                                  f"fact claims about {self.by_id[tid]['name']} but does "
+                                  f"not name it: {f['text']}")
+                checked += 1
+        self.assertGreaterEqual(checked, 2, "no never-played claim was actually checked")
+
+    def test_facts_that_read_as_never_met_record_the_claim(self):
+        """The structured field is only useful if the prose cannot assert more than it."""
+        for f in self.facts:
+            if "have never met" in f["text"] or "never played each other" in f["text"]:
+                self.assertTrue(f["never"],
+                                f"fact asserts a never-met pair but records none: {f['text']}")
+
+    def test_the_build_regenerates_them(self):
+        """Facts quote live figures, so the daily refresh has to rebuild this file."""
+        self.assertTrue(hasattr(build, "write_facts"))
+        app = (ROOT / "docs" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("data/facts.json", app, "app.js should fetch the facts")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
