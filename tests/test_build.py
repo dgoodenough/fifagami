@@ -395,5 +395,65 @@ class TestFacts(unittest.TestCase):
         self.assertIn("data/facts.json", app, "app.js should fetch the facts")
 
 
+class TestReadme(unittest.TestCase):
+    """The README opens on specific pairings and specific figures.
+
+    A daily robot commits new data over the top of it, so those claims can rot without
+    anyone touching the file. These are the ones a reader would check."""
+
+    def setUp(self):
+        raw = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.readme = raw
+        # Line-wrapped prose breaks a literal substring match, so flatten for phrase checks.
+        self.flat = " ".join(raw.split())
+        self.members = load("members.json")["members"]
+        self.by_name = {m["name"]: m for m in self.members}
+        self.counts = {
+            g: {(p[0], p[1]): p[2] for p in load(f"matrix_{g}.json")["pairs"]}
+            for g in ("men", "women")
+        }
+
+    def never_met(self, a: str, b: str) -> bool:
+        x, y = self.by_name[a]["id"], self.by_name[b]["id"]
+        return (min(x, y), max(x, y)) not in self.counts["men"]
+
+    def test_the_opening_pairings_have_still_never_met(self):
+        # assertTrue with a short message throughout: a failed assertIn against the README
+        # would dump the whole file into the report.
+        for a, b in (("Morocco", "Mexico"), ("Spain", "Senegal"), ("Japan", "Portugal")):
+            self.assertTrue(f"{a} have never played {b}" in self.flat,
+                            f"README should still open on {a} v {b}")
+            self.assertTrue(
+                self.never_met(a, b),
+                f"README says {a} have never played {b}, but they now have. "
+                f"Rewrite the opening.")
+        # Named further down, in the Near misses row.
+        self.assertTrue(self.never_met("Canada", "Sweden"),
+                        "README says Canada and Sweden have never played; they now have.")
+
+    def test_the_headline_percentages_still_round_the_same_way(self):
+        n = len(self.members)
+        possible = n * (n - 1) // 2
+        self.assertTrue(f"{possible:,} possible men's international fixtures" in self.flat,
+                        f"README should quote {possible:,} possible fixtures")
+        for g, claimed in (("men", 29), ("women", 13)):
+            pct = round(100 * len(self.counts[g]) / possible)
+            self.assertEqual(pct, claimed,
+                             f"README claims {claimed}% of the {g}'s fixtures have been "
+                             f"played; it is now {pct}%.")
+
+    def test_the_counted_claims_still_hold(self):
+        import itertools
+        elite = [m for m in self.members if (m["mens_rank"] or 999) <= 40]
+        unmet = sum(1 for a, b in itertools.combinations(elite, 2)
+                    if self.never_met(a["name"], b["name"]))
+        self.assertEqual(unmet, 77,
+                         f"README says seventy-seven top-40 pairs have never met; it is "
+                         f"now {unmet}.")
+        once = sum(1 for c in self.counts["men"].values() if c == 1)
+        self.assertTrue(f"{once:,} men's pairings played exactly once" in self.flat,
+                        f"README should say {once:,} pairings played exactly once")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
