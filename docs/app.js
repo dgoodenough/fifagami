@@ -1733,7 +1733,7 @@ function headlineFixtures(headline) {
   const cd = countdown(soonest);
   headline.innerHTML = `<span class="big">${n}</span>`
     + `<span class="rest">${pl(n, "pairing")} that ${n === 1 ? "has" : "have"} <b>never</b> met `
-    + `${n === 1 ? "is" : "are"} scheduled to${esc(scopeNote())} — the next one `
+    + `${n === 1 ? "is" : "are"} scheduled to meet${esc(scopeNote())} — the next one `
     + `<b>${esc(cd.text)}</b>.</span>`;
 }
 
