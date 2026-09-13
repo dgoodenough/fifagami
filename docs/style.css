@@ -202,6 +202,7 @@ button.mini:hover { color: var(--ink); border-color: var(--ink); }
 }
 .legend-keys .sw { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
 #sw-never { background: var(--never); border: 1px solid var(--grid-strong); }
+body[data-never="1"] #sw-never { background: var(--never-hi); border-color: var(--never-hi); }
 #sw-upcoming { background: var(--upcoming); }
 #sw-diag { background: var(--diag); }
 #sw-predebut { background: var(--predebut); border: 1px solid var(--grid); }

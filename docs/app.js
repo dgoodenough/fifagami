@@ -40,7 +40,7 @@ const S = {
   showConfeds: new Set(),
   manual: new Set(),
   includeDefunct: false,
-  highlightNever: false,
+  highlightNever: true,              // the empties are the subject; the ramp is the follow-up
   showUpcoming: false,               // highlight upcoming first meetings in yellow
   today: "",                         // client's current date (YYYY-MM-DD), set on load
   year: null,                        // scrubber: show grid as of this year (null = present)
@@ -807,6 +807,9 @@ function drawLegendTicks() {
 
 // Swap the meetings-ramp legend for the 4-category key in combined view (and vice versa).
 function updateLegend() {
+  // The never swatch has two appearances, because the cells do: paper when the grid is
+  // coloured by meetings, red when the empties are flooded. CSS reads this flag.
+  document.body.dataset.never = S.highlightNever ? "1" : "0";
   const rampBox = $("legend-ramp"), comb = $("legend-combined");
   if (rampBox && comb) { rampBox.hidden = isCombined(); comb.hidden = !isCombined(); }
   const lm = $("legend-max");
@@ -1870,7 +1873,7 @@ function writeUrl() {
     }
     if (S.manual.size) p.set("teams", [...S.manual].join(","));
     if (!present()) p.set("year", String(S.year));
-    if (S.highlightNever) p.set("never", "1");
+    if (!S.highlightNever) p.set("never", "0");
     if (S.showUpcoming) p.set("up", "1");
     if (S.includeDefunct) p.set("defunct", "1");
     if (S.view === "path" && S.path.a != null && S.path.b != null) {
@@ -1896,7 +1899,7 @@ function readUrl() {
   }
   if (p.has("teams")) S.manual = new Set(ids("teams").filter(id => S.byId.has(id)));
   S.includeDefunct = p.get("defunct") === "1";
-  S.highlightNever = p.get("never") === "1";
+  S.highlightNever = p.get("never") !== "0";
   S.showUpcoming = p.get("up") === "1";
   const year = Number(p.get("year"));
   if (Number.isFinite(year) && year >= YEAR_MIN && year <= S.maxYear) S.year = year;
@@ -2045,19 +2048,28 @@ function buildControls() {
   $("confed-none").onclick = () => toggleConfeds(false);
 
   // stage toolbar toggles
-  const toggle = (id, get, set) => {
+  const toggle = (id, get, set, titles) => {
     const el = $(id);
-    el.setAttribute("aria-pressed", get() ? "true" : "false");
-    el.classList.toggle("on", get());
-    el.onclick = () => {
-      set(!get());
+    const sync = () => {
       el.setAttribute("aria-pressed", get() ? "true" : "false");
       el.classList.toggle("on", get());
+      // The never-played highlight now ships on, so a fixed title would describe the
+      // wrong half of the control for most visitors. Say what the click will do.
+      if (titles) el.title = get() ? titles.off : titles.on;
+    };
+    sync();
+    el.onclick = () => {
+      set(!get());
+      sync();
       draw();
       writeUrl();
     };
   };
-  toggle("opt-highlight", () => S.highlightNever, v => { S.highlightNever = v; });
+  toggle("opt-highlight", () => S.highlightNever,
+    v => { S.highlightNever = v; updateLegend(); }, {
+      on: "Flood the never-played pairings with red",
+      off: "Drop the red and colour by how often each pair has met",
+    });
   toggle("opt-upcoming", () => S.showUpcoming, v => { S.showUpcoming = v; });
 
   $("opt-defunct").checked = S.includeDefunct;
