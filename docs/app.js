@@ -40,7 +40,7 @@ const S = {
   showConfeds: new Set(),
   manual: new Set(),
   includeDefunct: false,
-  highlightNever: false,
+  highlightNever: true,              // the empties are the subject; the ramp is the follow-up
   showUpcoming: false,               // highlight upcoming first meetings in yellow
   today: "",                         // client's current date (YYYY-MM-DD), set on load
   year: null,                        // scrubber: show grid as of this year (null = present)
@@ -807,6 +807,9 @@ function drawLegendTicks() {
 
 // Swap the meetings-ramp legend for the 4-category key in combined view (and vice versa).
 function updateLegend() {
+  // The never swatch has two appearances, because the cells do: paper when the grid is
+  // coloured by meetings, red when the empties are flooded. CSS reads this flag.
+  document.body.dataset.never = S.highlightNever ? "1" : "0";
   const rampBox = $("legend-ramp"), comb = $("legend-combined");
   if (rampBox && comb) { rampBox.hidden = isCombined(); comb.hidden = !isCombined(); }
   const lm = $("legend-max");
@@ -1651,6 +1654,54 @@ function renderPath() {
   $("path-b").onchange = e => { S.path.b = +e.target.value; renderPath(); updateHeadline(); writeUrl(); };
 }
 
+/* ---------- fact strip ----------
+   A number on its own is not a reason to keep reading. facts.json is built alongside the
+   matrices (see build_facts in build.py), so these refresh with the data instead of being
+   hand-written prose that quietly goes out of date. One at a time, shuffled per visit, and
+   each one links at the view that proves it. */
+const FACTS = { list: [], at: 0 };
+
+async function loadFacts() {
+  let facts;
+  try {
+    facts = (await fetch("data/facts.json" + VBUST).then(r => r.json())).facts;
+  } catch {
+    return;                       // an older build has no facts.json; the strip stays hidden
+  }
+  if (!Array.isArray(facts) || !facts.length) return;
+  // Shuffled, so a returning visitor is not met by the same line every time.
+  for (let i = facts.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [facts[i], facts[j]] = [facts[j], facts[i]];
+  }
+  FACTS.list = facts;
+  FACTS.at = 0;
+  $("fact-next").onclick = () => showFact(FACTS.at + 1);
+  showFact(0);
+}
+
+function showFact(i) {
+  const strip = $("factstrip");
+  if (!FACTS.list.length) return;
+  FACTS.at = ((i % FACTS.list.length) + FACTS.list.length) % FACTS.list.length;
+  const f = FACTS.list[FACTS.at];
+  const paint = () => {
+    $("fact").innerHTML = `<span class="fact-stat">${esc(f.stat)}</span>${esc(f.text)}`;
+    $("fact-link").href = f.url;
+    strip.classList.remove("swapping");
+  };
+  // Only fade when there is something to fade from.
+  if (strip.hidden) { paint(); } else { strip.classList.add("swapping"); setTimeout(paint, 180); }
+  syncFactStrip();
+}
+
+/* The list views open with their own standfirst explaining what is in them, so the strip
+   would be a second competing explanation. Keep it to the grid, which is the landing. */
+function syncFactStrip() {
+  const strip = $("factstrip");
+  if (strip) strip.hidden = !FACTS.list.length || S.view !== "grid";
+}
+
 /* ---------- headline ---------- */
 function updateStats() { updateHeadline(); }
 
@@ -1733,7 +1784,7 @@ function headlineFixtures(headline) {
   const cd = countdown(soonest);
   headline.innerHTML = `<span class="big">${n}</span>`
     + `<span class="rest">${pl(n, "pairing")} that ${n === 1 ? "has" : "have"} <b>never</b> met `
-    + `${n === 1 ? "is" : "are"} scheduled to${esc(scopeNote())} — the next one `
+    + `${n === 1 ? "is" : "are"} scheduled to meet${esc(scopeNote())} — the next one `
     + `<b>${esc(cd.text)}</b>.</span>`;
 }
 
@@ -1797,10 +1848,12 @@ function headlinePath(headline) {
 
 /* ---------- views ---------- */
 function defaultView() {
-  const anyFixtures = S.upcoming.men.size + S.upcoming.women.size > 0;
-  // On a phone the 211-column grid is something you deliberately zoom into, not a landing
-  // page. Lead with the feed — unless there is nothing in it.
-  return (mqMobile.matches && anyFixtures) ? "fixtures" : "grid";
+  // Phones used to land on the fixtures feed, on the theory that a 211-column matrix is
+  // something you zoom into rather than arrive at. But the grid is what the share card
+  // shows and what the link promises, and it does fit a phone: the labels shrink with the
+  // cells and Fit fills the width. Landing anywhere else hid the whole point from the
+  // majority of visitors, who arrive on a phone.
+  return "grid";
 }
 
 function applyView(view, { push = true, focus = true } = {}) {
@@ -1817,6 +1870,7 @@ function applyView(view, { push = true, focus = true } = {}) {
     b.tabIndex = on ? 0 : -1;
   });
   document.body.dataset.view = view;
+  syncFactStrip();
   /* The fixtures feed deliberately lists both games in labelled groups, so the dataset
      toggle has nothing to change there. It used to sit enabled and do nothing, which reads
      as a broken control and teaches people to distrust the others. Disable it and say why —
@@ -1870,7 +1924,7 @@ function writeUrl() {
     }
     if (S.manual.size) p.set("teams", [...S.manual].join(","));
     if (!present()) p.set("year", String(S.year));
-    if (S.highlightNever) p.set("never", "1");
+    if (!S.highlightNever) p.set("never", "0");
     if (S.showUpcoming) p.set("up", "1");
     if (S.includeDefunct) p.set("defunct", "1");
     if (S.view === "path" && S.path.a != null && S.path.b != null) {
@@ -1896,7 +1950,7 @@ function readUrl() {
   }
   if (p.has("teams")) S.manual = new Set(ids("teams").filter(id => S.byId.has(id)));
   S.includeDefunct = p.get("defunct") === "1";
-  S.highlightNever = p.get("never") === "1";
+  S.highlightNever = p.get("never") !== "0";
   S.showUpcoming = p.get("up") === "1";
   const year = Number(p.get("year"));
   if (Number.isFinite(year) && year >= YEAR_MIN && year <= S.maxYear) S.year = year;
@@ -2045,19 +2099,28 @@ function buildControls() {
   $("confed-none").onclick = () => toggleConfeds(false);
 
   // stage toolbar toggles
-  const toggle = (id, get, set) => {
+  const toggle = (id, get, set, titles) => {
     const el = $(id);
-    el.setAttribute("aria-pressed", get() ? "true" : "false");
-    el.classList.toggle("on", get());
-    el.onclick = () => {
-      set(!get());
+    const sync = () => {
       el.setAttribute("aria-pressed", get() ? "true" : "false");
       el.classList.toggle("on", get());
+      // The never-played highlight now ships on, so a fixed title would describe the
+      // wrong half of the control for most visitors. Say what the click will do.
+      if (titles) el.title = get() ? titles.off : titles.on;
+    };
+    sync();
+    el.onclick = () => {
+      set(!get());
+      sync();
       draw();
       writeUrl();
     };
   };
-  toggle("opt-highlight", () => S.highlightNever, v => { S.highlightNever = v; });
+  toggle("opt-highlight", () => S.highlightNever,
+    v => { S.highlightNever = v; updateLegend(); }, {
+      on: "Flood the never-played pairings with red",
+      off: "Drop the red and colour by how often each pair has met",
+    });
   toggle("opt-upcoming", () => S.showUpcoming, v => { S.showUpcoming = v; });
 
   $("opt-defunct").checked = S.includeDefunct;
@@ -2198,3 +2261,6 @@ load().catch(err => {
   if (el) el.textContent = "Failed to load data: " + err.message;
   console.error(err);
 });
+// Separate from load(): the grid must not wait on the fact strip, and a missing or
+// malformed facts.json should cost the page nothing.
+loadFacts();

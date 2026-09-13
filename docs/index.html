@@ -16,7 +16,7 @@
 <meta property="og:image" content="https://dgoodenough.github.io/national-team-grid/assets/og.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="A 211x211 grid of international football matchups, mostly empty; the headline reads 15,635 international matchups have never been played." />
+<meta property="og:image:alt" content="A 211x211 grid of international football matchups. Most of it is flooded red for the pairings that have never been played; the grey blocks are the ones that have. The headline reads 15,635 international matchups have never been played." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="National Team Matchup Grid" />
 <meta name="twitter:description" content="Every FIFA nation is a row and a column. The picture is the negative space — the matchups that have never happened." />
@@ -136,6 +136,15 @@
   <main id="stage">
     <div id="headline"></div>
 
+    <aside id="factstrip" hidden>
+      <p id="fact"></p>
+      <div class="fact-tools">
+        <a id="fact-link" href="#">Show me</a>
+        <button type="button" id="fact-next" aria-label="Another fact"
+                title="Another one">Another</button>
+      </div>
+    </aside>
+
     <div id="stage-bar">
       <nav id="views" role="tablist" aria-label="View">
         <button type="button" role="tab" data-view="grid" class="active" aria-selected="true" tabindex="0">Grid</button>
@@ -145,8 +154,8 @@
         <button type="button" role="tab" data-view="path" aria-selected="false" tabindex="-1">Connect</button>
       </nav>
       <div id="stage-tools">
-        <button type="button" id="opt-highlight" class="tool" aria-pressed="false"
-                title="Invert the grid so the never-played cells glow">
+        <button type="button" id="opt-highlight" class="tool" aria-pressed="true"
+                title="Drop the red and colour by how often each pair has met">
           <i class="tsw never"></i> Never-played</button>
         <button type="button" id="opt-upcoming" class="tool" aria-pressed="false"
                 title="Highlight pairs that have never met but have a fixture scheduled">

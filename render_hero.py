@@ -50,16 +50,20 @@ def load_font(size: int, bold: bool = True):
 
 
 def css_vars() -> dict[str, str]:
-    """Pull the custom properties out of docs/style.css's :root block.
+    """Pull the custom properties out of the stylesheets' :root blocks.
 
     The confederation colours and the meetings ramp live in the stylesheet because the app
     reads them from there at runtime; parsing them here keeps this script from being a
-    second, silently-drifting copy of the palette."""
-    text = (DOCS / "style.css").read_text(encoding="utf-8")
-    root = re.search(r":root\s*\{(.*?)\n\}", text, re.S)
-    if not root:
-        raise SystemExit("could not find the :root block in docs/style.css")
-    return dict(re.findall(r"(--[\w-]+)\s*:\s*([^;]+);", root.group(1)))
+    second, silently-drifting copy of the palette. tokens.css is read first and style.css
+    second, so the app-level aliases win, matching the cascade in the browser."""
+    out: dict[str, str] = {}
+    for name in ("tokens.css", "style.css"):
+        text = (DOCS / name).read_text(encoding="utf-8")
+        root = re.search(r":root\s*\{(.*?)\n\}", text, re.S)
+        if not root:
+            raise SystemExit(f"could not find the :root block in docs/{name}")
+        out.update(re.findall(r"(--[\w-]+)\s*:\s*([^;]+);", root.group(1)))
+    return out
 
 
 VARS = css_vars()
@@ -91,15 +95,28 @@ def load_grid(gender: str = "men"):
     return members, matrix, counts
 
 
+def played_grey(t: float) -> tuple[int, int, int]:
+    """Played cell in never-played mode: paper-2 up to ink-3, so the meetings recede.
+
+    Mirrors cellColor() in app.js, which does the same lerp when the highlight is on."""
+    c0, c1 = hexrgb(VARS["--paper-2"]), hexrgb(VARS["--ink-3"])
+    return tuple(round(a + (b - a) * t) for a, b in zip(c0, c1))
+
+
 def draw_grid(d: ImageDraw.ImageDraw, members, matrix, counts, ox: int, oy: int,
-              cell: int, band: int | None = None) -> int:
-    """Paint the matrix at (ox, oy). Returns its pixel size."""
+              cell: int, band: int | None = None, never: bool = False) -> int:
+    """Paint the matrix at (ox, oy). Returns its pixel size.
+
+    never=True renders the landing view: the pairings that have not happened flood red and
+    the ones that have fade to grey, so the picture is of the absence rather than the
+    record. The site opens this way, so the hero and the share card have to as well."""
     max_log = math.log1p(matrix["max_count"])
     order = [m["id"] for m in members]              # members.json is pre-sorted confed+rank
     confed = {m["id"]: m["confed"] for m in members}
     n = len(order)
 
-    d.rectangle([ox, oy, ox + n * cell, oy + n * cell], fill=SHEET, outline=GRID_STRONG)
+    ground = hexrgb(VARS["--never-hi"]) if never else SHEET
+    d.rectangle([ox, oy, ox + n * cell, oy + n * cell], fill=ground, outline=GRID_STRONG)
     for r, a in enumerate(order):
         for c, b in enumerate(order):
             if a == b:
@@ -107,31 +124,62 @@ def draw_grid(d: ImageDraw.ImageDraw, members, matrix, counts, ox: int, oy: int,
             else:
                 cnt = counts.get((min(a, b), max(a, b)), 0)
                 if not cnt:
-                    continue                        # never-played = the sheet
-                col = ramp(math.log1p(cnt) / max_log)
+                    continue                        # never-played = the ground, already painted
+                col = played_grey(math.log1p(cnt) / max_log) if never \
+                    else ramp(math.log1p(cnt) / max_log)
             x, y = ox + c * cell, oy + r * cell
             d.rectangle([x, y, x + cell - 1, y + cell - 1], fill=col)
 
     if band:                                        # confederation strips (top + left)
+        font = load_font(max(9, band - 3))
         i = 0
         while i < n:
             j = i
             while j + 1 < n and confed[order[j + 1]] == confed[order[i]]:
                 j += 1
-            col = CONFED[confed[order[i]]]
-            d.rectangle([ox + i * cell, oy - band - 2,
-                         ox + (j + 1) * cell - 1, oy - 3], fill=col)
+            name = confed[order[i]]
+            col = CONFED[name]
+            x0, x1 = ox + i * cell, ox + (j + 1) * cell - 1
+            d.rectangle([x0, oy - band - 2, x1, oy - 3], fill=col)
             d.rectangle([ox - band - 2, oy + i * cell,
                          ox - 3, oy + (j + 1) * cell - 1], fill=col)
+            # Name the block when it is wide enough to hold the word. CONMEBOL and OFC
+            # are ten and eleven teams wide and never are, which is what the key is for.
+            w = d.textlength(name, font=font)
+            if w <= (x1 - x0) - 6:
+                d.text(((x0 + x1) / 2 - w / 2, oy - band - 1), name,
+                       font=font, fill=hexrgb(VARS["--band-strip-ink"]))
             i = j + 1
     return n * cell
 
 
+def draw_key(d: ImageDraw.ImageDraw, x: int, y: int, cell: int, order) -> None:
+    """One line under the grid saying what the two colours and the strips mean.
+
+    Without it the hero is an attractive abstract: nothing in the picture says the axes are
+    countries, or that red is the subject rather than an error."""
+    font = load_font(15, bold=False)
+    sw = 13
+    def chip(x, label, fill, bold=False):
+        d.rectangle([x, y + 2, x + sw, y + 2 + sw], fill=fill)
+        f = load_font(15, bold=bold)
+        d.text((x + sw + 7, y), label, font=f, fill=hexrgb(VARS["--ink-2"]))
+        return x + sw + 7 + d.textlength(label, font=f) + 22
+    x = chip(x, "never played", hexrgb(VARS["--never-hi"]), bold=True)
+    x = chip(x, "have played", played_grey(0.55))
+    for name in order:
+        x = chip(x, name, CONFED[name].strip())
+
+
 def render_hero() -> Path:
     members, matrix, counts = load_grid("men")
-    size = MARGIN + len(members) * CELL + 12
-    img = Image.new("RGB", (size, size), CHROME)
-    draw_grid(ImageDraw.Draw(img), members, matrix, counts, MARGIN, MARGIN, CELL, BAND)
+    KEY = 34                                        # strip under the grid for the key
+    span = MARGIN + len(members) * CELL + 12
+    img = Image.new("RGB", (span, span + KEY), CHROME)
+    d = ImageDraw.Draw(img)
+    draw_grid(d, members, matrix, counts, MARGIN, MARGIN, CELL, BAND, never=True)
+    seen = list(dict.fromkeys(m["confed"] for m in members))
+    draw_key(d, MARGIN, span + 4, CELL, seen)
     out = DOCS / "assets/hero.png"
     img.save(out)
     print(f"wrote {out} ({img.width}x{img.height})")
@@ -158,7 +206,7 @@ def render_og() -> Path:
     PANEL = 596                                     # text column width
     cell = 4
     grid_px = n * cell
-    draw_grid(d, members, matrix, counts, PANEL + 24, (H - grid_px) // 2, cell)
+    draw_grid(d, members, matrix, counts, PANEL + 24, (H - grid_px) // 2, cell, never=True)
 
     # Text column painted over the grid, so a long line can never collide with it.
     d.rectangle([0, 0, PANEL, H], fill=CHROME)
@@ -180,8 +228,11 @@ def render_og() -> Path:
     d.text((x, y + 32), "between FIFA's 211 members have ever happened.",
            font=load_font(23, bold=False), fill=(154, 163, 178))
 
-    d.text((x, H - 76), "NATIONAL TEAM MATCHUP GRID",
+    d.text((x, H - 88), "NATIONAL TEAM MATCHUP GRID",
            font=load_font(21), fill=hexrgb(VARS["--ramp-100"]))
+    # The card gets screenshotted and re-posted without the link it was attached to.
+    d.text((x, H - 58), "dgoodenough.github.io/national-team-grid",
+           font=load_font(19, bold=False), fill=hexrgb(VARS["--ink-3"]))
 
     out = DOCS / "assets/og.png"
     img.save(out)
