@@ -215,7 +215,9 @@ Pure static site — vanilla JavaScript + HTML5 Canvas, no build step and no run
 The ~44,000-cell grid is drawn directly to a canvas with view-culling for smooth zoom/pan. Pointer
 Events drive one interaction path for both mouse (hover, drag, click, wheel) and touch (drag to pan,
 pinch to zoom, tap to aim then confirm), and the layout reflows for phones — which lead with the
-fixtures feed rather than a 211-column matrix. Hosted on GitHub Pages from `docs/`.
+fixtures feed rather than a 211-column matrix. Hosted on GitHub Pages from `docs/`. The one
+third-party script is [GoatCounter](https://www.goatcounter.com), which counts pageviews without
+cookies or cross-site identifiers.
 
 Two things the grid does to stay quick at 22,155 pairings: the headline's never-played count is a
 prefix sum over each pair's first-meeting year, built once per view change and read in O(1) per
