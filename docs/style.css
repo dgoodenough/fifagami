@@ -235,6 +235,7 @@ body[data-never="1"] #sw-never { background: var(--never-hi); border-color: var(
 #headline .rest { font-size: .95rem; color: var(--band-ink); max-width: 60ch; }
 #headline .rest b { color: var(--pos-on-band); }
 #headline.allplayed .big { color: var(--pos-on-band); }
+#headline.played .big { color: var(--pos-on-band); }   /* a count of what happened */
 #headline.combined .big { color: var(--pos-on-band); }  /* the "both" count */
 
 /* ---- stage bar: view tabs + toggles ---- */
