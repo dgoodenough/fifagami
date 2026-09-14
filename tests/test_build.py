@@ -452,32 +452,68 @@ class TestReadme(unittest.TestCase):
         self.assertTrue(self.never_met("Canada", "Sweden"),
                         "README says Canada and Sweden have never played; they now have.")
 
-    def test_the_headline_percentages_still_round_the_same_way(self):
+    def test_the_opening_bounds_still_hold(self):
+        """The opening states bounds rather than counts, so it does not need editing every
+        time two teams play. Exact figures were unusable here: 29% was sixteen first-ever
+        meetings from rounding to 30%, with thirty already on the calendar. These bounds are
+        roughly 870 meetings away each, and both sides only ever grow."""
         n = len(self.members)
         possible = n * (n - 1) // 2
         self.assertTrue(f"{possible:,} possible men's international fixtures" in self.flat,
                         f"README should quote {possible:,} possible fixtures")
-        for g, claimed in (("men", 29), ("women", 13)):
-            played = len(self.counts[g])
-            pct = round(100 * played / possible)
-            self.assertEqual(pct, claimed,
-                             f"README claims {claimed}% of the {g}'s fixtures have been "
-                             f"played; it is now {pct}%.")
-            # The opening also quotes the raw counts, which move faster than the percentage.
-            self.assertTrue(f"{played:,}" in self.flat,
-                            f"README should quote {played:,} played {g}'s fixtures")
+        men = len(self.counts["men"]) / possible
+        women = len(self.counts["women"]) / possible
+        self.assertLess(men, 1 / 3,
+                        f"README says fewer than a third of men's fixtures have been played; "
+                        f"it is now {men:.1%}. Widen the bound.")
+        self.assertLess(women, 1 / 6,
+                        f"README says fewer than one in six women's fixtures have been "
+                        f"played; it is now {women:.1%}. Widen the bound.")
 
-    def test_the_counted_claims_still_hold(self):
+    def test_the_hedged_claims_still_hold(self):
+        """Each of these is phrased as a bound the data can only move away from, except the
+        top-40 count, which moves with the rankings in both directions."""
         import itertools
         elite = [m for m in self.members if (m["mens_rank"] or 999) <= 40]
         unmet = sum(1 for a, b in itertools.combinations(elite, 2)
                     if self.never_met(a["name"], b["name"]))
-        self.assertEqual(unmet, 77,
-                         f"README says seventy-seven top-40 pairs have never met; it is "
-                         f"now {unmet}.")
-        once = sum(1 for c in self.counts["men"].values() if c == 1)
-        self.assertTrue(f"{once:,} men's pairings played exactly once" in self.flat,
-                        f"README should say {once:,} pairings played exactly once")
+        self.assertGreaterEqual(unmet, 24, f"README says dozens of top-40 pairs have never "
+                                           f"met; it is now {unmet}.")
+
+        opponents = {}
+        for a, b in self.counts["men"]:
+            opponents.setdefault(a, set()).add(b)
+            opponents.setdefault(b, set()).add(a)
+        ids = {m["name"]: m["id"] for m in self.members}
+        shared = len(opponents[ids["Canada"]] & opponents[ids["Sweden"]])
+        self.assertGreater(shared, 70, f"README says Canada and Sweden share more than "
+                                       f"seventy opponents; it is now {shared}.")
+
+        tonga = len(opponents[ids["Tonga"]])
+        self.assertLessEqual(tonga, 12, f"README says Tonga has played a dozen countries at "
+                                        f"most; it is now {tonga}.")
+
+    def test_every_team_is_within_three_matches_of_every_other(self):
+        """The README's Connect row claims it, and the diameter can only shrink as teams
+        play, so this is a bound rather than a moving figure."""
+        from collections import deque
+        adj = {}
+        for a, b in self.counts["men"]:
+            adj.setdefault(a, set()).add(b)
+            adj.setdefault(b, set()).add(a)
+        worst = 0
+        for src in adj:
+            dist = {src: 0}
+            queue = deque([src])
+            while queue:
+                u = queue.popleft()
+                for v in adj[u]:
+                    if v not in dist:
+                        dist[v] = dist[u] + 1
+                        worst = max(worst, dist[v])
+                        queue.append(v)
+        self.assertLessEqual(worst, 3, f"README says every team is within three matches of "
+                                       f"every other; the longest chain is now {worst}.")
 
 
 if __name__ == "__main__":

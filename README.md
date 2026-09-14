@@ -1,10 +1,10 @@
 # National Team Matchup Grid
 
 Morocco have never played Mexico. Spain have never played Senegal. Japan have never played
-Portugal. Seventy-seven pairs of top-40 national teams have never met at all.
+Portugal. Dozens of pairs of top-40 national teams have never met at all.
 
-**6,520 of the 22,155 possible men's international fixtures have been played**, 29% of them.
-In the women's game it is 2,822, or 13%. Every pairing is one cell of this grid.
+**Fewer than a third of the 22,155 possible men's international fixtures have been played**,
+and fewer than one in six of the women's. Every pairing is one cell of this grid.
 
 **▶ Live: https://dgoodenough.github.io/national-team-grid/**
 
@@ -21,7 +21,8 @@ and empties out between the blocks.
 
 **Red** is a pairing that has never happened. **Grey** is one that has, darker for more
 meetings. Turn off *Never-played* and the grid colours by meetings instead, a green ramp from
-a single match up to the 183 Argentina and Uruguay have played since 1902.
+a single match up to Argentina against Uruguay, the most-played fixture in the game,
+first contested in 1902.
 
 The diagonal is blacked out. A team cannot play itself.
 
@@ -35,9 +36,9 @@ toggle and the timeline scrubber narrow all five. Filter to CONMEBOL, scrub to 1
 | --- | --- |
 | **Grid** | The 211×211 matrix. |
 | **Fixtures** | Pairings that have never met and have a date on the calendar, with a countdown. Also published as a [feed](#syndication). |
-| **One-offs** | The 1,546 men's pairings played exactly once, oldest first. Egypt beat Lithuania 10–0 in 1924 and the two have not met since. |
-| **Near misses** | Pairs that have never met, ranked by opponents they already share. Canada and Sweden have 73 in common and have never played. |
-| **Connect** | Tonga has played ten countries. It is still two matches from Spain, and no two national teams anywhere are more than three apart. |
+| **One-offs** | The men's pairings played exactly once, oldest first. Egypt beat Lithuania 10–0 in 1924 and the two have not met since. |
+| **Near misses** | Pairs that have never met, ranked by opponents they already share. Canada and Sweden have more than seventy in common and have never played. |
+| **Connect** | Tonga has played a dozen countries at most, and still reaches every other national team on earth within three matches. |
 
 ## What it does
 
@@ -157,8 +158,8 @@ zoom and pan, and Pointer Events give mouse and touch a single interaction path.
 
 Two things keep it quick at 22,155 pairings. The never-played count is a prefix sum over each
 pair's first-meeting year, so a timeline drag reads it in constant time per frame instead of
-walking every pair. The played graph is held as bitsets, so common-opponent counts for all
-15,635 never-played pairs come out in a few milliseconds.
+walking every pair. The played graph is held as bitsets, so common-opponent counts for every
+never-played pair come out in a few milliseconds.
 
 The one third-party script is [GoatCounter](https://www.goatcounter.com), which counts pageviews
 without cookies or cross-site identifiers.
