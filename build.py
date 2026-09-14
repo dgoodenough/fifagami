@@ -68,7 +68,7 @@ SOURCES = {
 CONFED_ORDER = ["AFC", "CAF", "CONCACAF", "CONMEBOL", "OFC", "UEFA"]
 
 # Canonical public URL - absolute links in the syndication feeds and share cards.
-SITE_URL = "https://dgoodenough.github.io/national-team-grid/"
+SITE_URL = "https://dgoodenough.github.io/fifagami/"
 
 # Ranking-snapshot team name  ->  canonical match-data team name.
 # (Only the names that don't already match the martj42 spelling verbatim.)
