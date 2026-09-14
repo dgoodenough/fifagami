@@ -78,12 +78,23 @@
 
     <section class="ctl" id="timeline">
       <div class="row"><span class="lbl">Timeline</span><span id="year-label" class="hint"></span></div>
+      <!-- Phone-only header. The scrubber is three rows tall and sits between the toolbar and
+           the grid on mobile, so it ships collapsed and this button opens it. Exactly one of
+           this and the row above is ever displayed, so neither duplicates the other in the
+           tab order or to a screen reader. -->
+      <button type="button" id="timeline-toggle" aria-expanded="false" aria-controls="timeline-body">
+        <span class="lbl">Timeline</span>
+        <span id="year-summary" class="hint"></span>
+        <span class="tl-chevron" aria-hidden="true">&#9662;</span>
+      </button>
+      <div id="timeline-body">
       <div class="scrub-row">
         <button type="button" id="year-play" class="playbtn" aria-label="Play the timeline from 1872" title="Play the timeline">&#9654;</button>
         <input type="range" id="year-scrub" min="1872" max="2026" step="1" value="2026"
                autocomplete="off" aria-label="Show the grid as of year" />
       </div>
       <p class="hint timeline-help">Scrub to watch the grid fill in — empty cells are matchups that hadn't happened yet.</p>
+      </div>
     </section>
 
     <section class="ctl">

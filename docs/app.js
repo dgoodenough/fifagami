@@ -1978,8 +1978,15 @@ function readUrl() {
 
 /* ---------- timeline ---------- */
 function setYearLabel() {
+  const text = present() ? `present (${S.maxYear})` : `${S.year}`;
   const el = $("year-label");
-  if (el) el.textContent = present() ? `present (${S.maxYear})` : `${S.year}`;
+  if (el) el.textContent = text;
+  // The phone header is the only thing visible while the scrubber is collapsed, so it has
+  // to say which year the grid is showing.
+  const sum = $("year-summary");
+  if (sum) sum.textContent = present() ? "present" : `showing ${S.year}`;
+  const tl = $("timeline");
+  if (tl) tl.classList.toggle("scrubbed", !present());
 }
 function setYear(y, { redraw = true } = {}) {
   S.year = Math.max(YEAR_MIN, Math.min(S.maxYear, y));
@@ -2038,6 +2045,17 @@ function placeTimeline() {
   if (!_timelineHome) _timelineHome = { parent: timeline.parentNode, next: timeline.nextSibling };
   if (mqMobile.matches) $("timeline-slot").appendChild(timeline);
   else _timelineHome.parent.insertBefore(timeline, _timelineHome.next);
+  // Collapsed by default on a phone, so the grid starts above the fold. A link that
+  // arrives already scrubbed opens it, because hiding a control that is filtering what
+  // you are looking at is worse than the space it costs.
+  setTimelineOpen(mqMobile.matches ? !present() : true);
+}
+
+function setTimelineOpen(open) {
+  const timeline = $("timeline"), btn = $("timeline-toggle");
+  if (!timeline || !btn) return;
+  timeline.classList.toggle("collapsed", !open);
+  btn.setAttribute("aria-expanded", open ? "true" : "false");
 }
 
 /* ---------- controls ---------- */
@@ -2166,6 +2184,15 @@ function buildControls() {
       announce("Copy the address bar to share this view.");
     }
   };
+
+  const tlToggle = $("timeline-toggle");
+  if (tlToggle) {
+    tlToggle.onclick = () => {
+      const open = tlToggle.getAttribute("aria-expanded") === "true";
+      setTimelineOpen(!open);
+      if (open) stopPlay();            // collapsing mid-playback would hide a moving grid
+    };
+  }
 
   // timeline scrubber
   const scrub = $("year-scrub");

@@ -177,6 +177,8 @@ button.mini:hover { color: var(--ink); border-color: var(--ink); }
 }
 
 /* timeline */
+#timeline-toggle { display: none; }          /* phone-only; see the mobile block below */
+#timeline-body { display: block; }
 .scrub-row { display: flex; align-items: center; gap: 9px; }
 #year-scrub { flex: 1; min-width: 0; accent-color: var(--pos); cursor: pointer; }
 .playbtn {
@@ -498,8 +500,27 @@ body[data-never="1"] #sw-never { background: var(--never-hi); border-color: var(
   #timeline-slot #timeline {
     margin: 0; padding: 8px 16px 10px; border-bottom: 1px solid var(--grid-strong); background: var(--chrome-2);
   }
-  #timeline-slot #timeline .row { margin-bottom: 6px; }
+  #timeline-slot #timeline { padding: 0 16px; }
+  #timeline-slot #timeline .row { display: none; }   /* replaced by the toggle */
   #timeline-slot .timeline-help { display: none; }
+
+  /* Collapsed, the scrubber costs one row instead of three, which is the difference
+     between the grid starting above the fold and below it. */
+  #timeline-slot #timeline-toggle {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    min-height: 44px; padding: 0; margin: 0;
+    background: none; border: 0; color: var(--ink-2);
+    font: inherit; text-align: left; cursor: pointer;
+  }
+  #timeline-slot #timeline-toggle .lbl { margin: 0; }
+  #timeline-slot #year-summary { font-variant-numeric: tabular-nums; }
+  /* A collapsed control that is silently filtering the grid is a trap, so a scrubbed
+     year is called out in the accent colour on the closed header. */
+  #timeline-slot #timeline.scrubbed #year-summary { color: var(--pos); font-weight: 600; }
+  #timeline-slot .tl-chevron { margin-left: auto; font-size: .8rem; color: var(--ink-3); }
+  #timeline-slot #timeline.collapsed #timeline-body { display: none; }
+  #timeline-slot #timeline.collapsed .tl-chevron { transform: rotate(-90deg); }
+  #timeline-slot #timeline-body { padding-bottom: 10px; }
   /* The timeline belongs to the grid; it should not sit above a list view. */
   body:not([data-view="grid"]) #timeline-slot #timeline { display: none; }
 }
