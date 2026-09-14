@@ -2,14 +2,14 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>FIFAGami - first-ever international meetings</title>
-    <link>https://dgoodenough.github.io/national-team-grid/</link>
+    <link>https://dgoodenough.github.io/fifagami/</link>
     <description>Scheduled fixtures between national teams that have never played each other, from FIFAGami.</description>
     <language>en</language>
-    <atom:link href="https://dgoodenough.github.io/national-team-grid/feed.xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="https://dgoodenough.github.io/fifagami/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Mon, 14 Sep 2026 00:00:00 +0000</lastBuildDate>
     <item>
       <title>Montserrat v Turks and Caicos Islands - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=124,130</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=124,130</link>
       <guid isPermaLink="false">fifagami-men-124-130-2026-09-23</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Concacaf Nations League</category>
@@ -17,7 +17,7 @@
     </item>
     <item>
       <title>São Tomé and Príncipe v Gibraltar - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=96,208</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=96,208</link>
       <guid isPermaLink="false">fifagami-men-96-208-2026-09-23</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
@@ -25,7 +25,7 @@
     </item>
     <item>
       <title>Palestine v New Zealand - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=15,145</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=15,145</link>
       <guid isPermaLink="false">fifagami-men-15-145-2026-09-24</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
@@ -33,7 +33,7 @@
     </item>
     <item>
       <title>Republic of Ireland v Kosovo - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=182,192</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=182,192</link>
       <guid isPermaLink="false">fifagami-men-182-192-2026-09-24</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>UEFA Nations League</category>
@@ -41,7 +41,7 @@
     </item>
     <item>
       <title>Sierra Leone v Zimbabwe - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=79,82</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=79,82</link>
       <guid isPermaLink="false">fifagami-men-79-82-2026-09-24</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Africa Cup of Nations Qualifying</category>
@@ -49,7 +49,7 @@
     </item>
     <item>
       <title>Gambia v Somalia - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=75,98</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=75,98</link>
       <guid isPermaLink="false">fifagami-men-75-98-2026-09-25</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Africa Cup of Nations Qualifying</category>
@@ -57,7 +57,7 @@
     </item>
     <item>
       <title>India v Panama - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=25,103</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=25,103</link>
       <guid isPermaLink="false">fifagami-men-25-103-2026-09-25</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
@@ -65,7 +65,7 @@
     </item>
     <item>
       <title>Tanzania v Guinea-Bissau - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=72,83</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=72,83</link>
       <guid isPermaLink="false">fifagami-men-72-83-2026-09-25</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Africa Cup of Nations Qualifying</category>
@@ -73,7 +73,7 @@
     </item>
     <item>
       <title>Togo v Burundi - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=77,87</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=77,87</link>
       <guid isPermaLink="false">fifagami-men-77-87-2026-09-25</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Africa Cup of Nations Qualifying</category>
@@ -81,7 +81,7 @@
     </item>
     <item>
       <title>Switzerland v North Macedonia - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=164,186</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=164,186</link>
       <guid isPermaLink="false">fifagami-men-164-186-2026-09-26</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>UEFA Nations League</category>
@@ -89,7 +89,7 @@
     </item>
     <item>
       <title>Austria v Kosovo - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=168,192</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=168,192</link>
       <guid isPermaLink="false">fifagami-men-168-192-2026-09-27</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>UEFA Nations League</category>
@@ -97,7 +97,7 @@
     </item>
     <item>
       <title>Puerto Rico v Dominica - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=117,127</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=117,127</link>
       <guid isPermaLink="false">fifagami-men-117-127-2026-09-28</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Concacaf Nations League</category>
@@ -105,7 +105,7 @@
     </item>
     <item>
       <title>Aruba v Anguilla - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=128,134</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=128,134</link>
       <guid isPermaLink="false">fifagami-men-128-134-2026-09-29</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Concacaf Nations League</category>
@@ -113,7 +113,7 @@
     </item>
     <item>
       <title>Ivory Coast v Somalia - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=51,98</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=51,98</link>
       <guid isPermaLink="false">fifagami-men-51-98-2026-09-29</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Africa Cup of Nations Qualifying</category>
@@ -121,7 +121,7 @@
     </item>
     <item>
       <title>South Africa v Eritrea - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=55,95</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=55,95</link>
       <guid isPermaLink="false">fifagami-men-55-95-2026-09-30</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Africa Cup of Nations Qualifying</category>
@@ -129,7 +129,7 @@
     </item>
     <item>
       <title>Panama v New Zealand - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=103,145</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=103,145</link>
       <guid isPermaLink="false">fifagami-men-103-145-2026-10-01</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
@@ -137,7 +137,7 @@
     </item>
     <item>
       <title>India v Brazil - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=25,136</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=25,136</link>
       <guid isPermaLink="false">fifagami-men-25-136-2026-10-03</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
@@ -145,7 +145,7 @@
     </item>
     <item>
       <title>Namibia v Russia - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=78,171</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=78,171</link>
       <guid isPermaLink="false">fifagami-men-78-171-2026-10-03</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
@@ -153,7 +153,7 @@
     </item>
     <item>
       <title>Sri Lanka v Djibouti - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=38,97</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=38,97</link>
       <guid isPermaLink="false">fifagami-men-38-97-2026-10-03</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
@@ -161,7 +161,7 @@
     </item>
     <item>
       <title>Sri Lanka v Mauritius - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=38,93</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=38,93</link>
       <guid isPermaLink="false">fifagami-men-38-93-2026-10-05</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
@@ -169,7 +169,7 @@
     </item>
     <item>
       <title>Jordan v Venezuela - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=9,141</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=9,141</link>
       <guid isPermaLink="false">fifagami-men-9-141-2026-10-06</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
@@ -177,7 +177,7 @@
     </item>
     <item>
       <title>Austria v Kosovo - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=168,192</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=168,192</link>
       <guid isPermaLink="false">fifagami-women-168-192-2026-10-09</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>FIFA Women's World Cup Qualifying - UEFA</category>
@@ -185,7 +185,7 @@
     </item>
     <item>
       <title>England v Greece - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=158,179</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=158,179</link>
       <guid isPermaLink="false">fifagami-women-158-179-2026-10-09</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>FIFA Women's World Cup Qualifying - UEFA</category>
@@ -193,7 +193,7 @@
     </item>
     <item>
       <title>Italy v Belarus - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=165,195</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=165,195</link>
       <guid isPermaLink="false">fifagami-women-165-195-2026-10-09</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>FIFA Women's World Cup Qualifying - UEFA</category>
@@ -201,7 +201,7 @@
     </item>
     <item>
       <title>Japan v Haiti - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=0,108</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=0,108</link>
       <guid isPermaLink="false">fifagami-women-0-108-2026-10-09</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Women's International Friendly</category>
@@ -209,7 +209,7 @@
     </item>
     <item>
       <title>Norway v Romania - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=166,181</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=166,181</link>
       <guid isPermaLink="false">fifagami-women-166-181-2026-10-09</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>FIFA Women's World Cup Qualifying - UEFA</category>
@@ -217,7 +217,7 @@
     </item>
     <item>
       <title>Philippines v Peru - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=23,143</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=23,143</link>
       <guid isPermaLink="false">fifagami-women-23-143-2026-10-09</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Women's International Friendly</category>
@@ -225,7 +225,7 @@
     </item>
     <item>
       <title>Sweden v Lithuania - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=173,204</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=173,204</link>
       <guid isPermaLink="false">fifagami-women-173-204-2026-10-09</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>FIFA Women's World Cup Qualifying - UEFA</category>
@@ -233,7 +233,7 @@
     </item>
     <item>
       <title>El Salvador v Paraguay - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=110,140</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=110,140</link>
       <guid isPermaLink="false">fifagami-women-110-140-2026-10-10</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Women's International Friendly</category>
@@ -241,7 +241,7 @@
     </item>
     <item>
       <title>France v Latvia - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=157,203</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=157,203</link>
       <guid isPermaLink="false">fifagami-women-157-203-2026-10-10</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Women's International Friendly</category>
@@ -249,7 +249,7 @@
     </item>
     <item>
       <title>Indonesia v Armenia - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=20,197</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=20,197</link>
       <guid isPermaLink="false">fifagami-women-20-197-2026-10-10</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Women's International Friendly</category>
@@ -257,7 +257,7 @@
     </item>
     <item>
       <title>Panama v New Zealand - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=103,145</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=103,145</link>
       <guid isPermaLink="false">fifagami-women-103-145-2026-10-10</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Women's International Friendly</category>
@@ -265,7 +265,7 @@
     </item>
     <item>
       <title>Australia v Haiti - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=2,108</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=2,108</link>
       <guid isPermaLink="false">fifagami-women-2-108-2026-10-13</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Women's International Friendly</category>
@@ -273,7 +273,7 @@
     </item>
     <item>
       <title>Singapore v Paraguay - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=28,140</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=28,140</link>
       <guid isPermaLink="false">fifagami-men-28-140-2026-11-13</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
@@ -281,7 +281,7 @@
     </item>
     <item>
       <title>Singapore v Brazil - first ever men's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=men&amp;up=1&amp;pair=28,136</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=28,136</link>
       <guid isPermaLink="false">fifagami-men-28-136-2026-11-17</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
@@ -289,7 +289,7 @@
     </item>
     <item>
       <title>United States v El Salvador - first ever women's meeting</title>
-      <link>https://dgoodenough.github.io/national-team-grid/?view=fixtures&amp;g=women&amp;up=1&amp;pair=101,110</link>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=101,110</link>
       <guid isPermaLink="false">fifagami-women-101-110-2026-11-28</guid>
       <pubDate>Mon, 14 Sep 2026 00:00:00 +0000</pubDate>
       <category>Concacaf W Championship</category>

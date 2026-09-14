@@ -6,7 +6,7 @@ Portugal. Dozens of pairs of top-40 national teams have never met at all.
 **Fewer than a third of the 22,155 possible men's international fixtures have been played**,
 and fewer than one in six of the women's. Every pairing is one cell of this grid.
 
-**▶ Live: https://dgoodenough.github.io/national-team-grid/**
+**▶ Live: https://dgoodenough.github.io/fifagami/**
 
 ![Every possible international fixture, played in grey and unplayed in red](docs/assets/hero.png)
 
@@ -145,8 +145,8 @@ out of sync, a fact on the landing page that stopped being true when two teams f
 ## Syndication
 
 Upcoming first meetings are published as
-[RSS](https://dgoodenough.github.io/national-team-grid/feed.xml) and
-[JSON Feed](https://dgoodenough.github.io/national-team-grid/feed.json). Item ids are stable per
+[RSS](https://dgoodenough.github.io/fifagami/feed.xml) and
+[JSON Feed](https://dgoodenough.github.io/fifagami/feed.json). Item ids are stable per
 pair and date, so a reader shows an entry once: when a fixture between two nations that have
 never met first appears on the calendar. Every item links back to that pairing in the app.
 

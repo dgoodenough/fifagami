@@ -232,7 +232,7 @@ def render_og() -> Path:
     d.text((x, H - 88), "FIFAGAMI",
            font=load_font(21), fill=hexrgb(VARS["--ramp-100"]))
     # The card gets screenshotted and re-posted without the link it was attached to.
-    d.text((x, H - 58), "dgoodenough.github.io/national-team-grid",
+    d.text((x, H - 58), "dgoodenough.github.io/fifagami",
            font=load_font(19, bold=False), fill=hexrgb(VARS["--ink-3"]))
 
     out = DOCS / "assets/og.png"
