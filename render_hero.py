@@ -229,7 +229,7 @@ def render_og() -> Path:
     d.text((x, y + 32), f"between FIFA's {n} members. The rest is the picture.",
            font=load_font(23, bold=False), fill=(154, 163, 178))
 
-    d.text((x, H - 88), "NATIONAL TEAM MATCHUP GRID",
+    d.text((x, H - 88), "FIFAGAMI",
            font=load_font(21), fill=hexrgb(VARS["--ramp-100"]))
     # The card gets screenshotted and re-posted without the link it was attached to.
     d.text((x, H - 58), "dgoodenough.github.io/national-team-grid",

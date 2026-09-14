@@ -1,4 +1,4 @@
-# National Team Matchup Grid
+# FIFAGami
 
 Morocco have never played Mexico. Spain have never played Senegal. Japan have never played
 Portugal. Dozens of pairs of top-40 national teams have never met at all.
