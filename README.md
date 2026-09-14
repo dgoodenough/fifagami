@@ -8,7 +8,7 @@ and fewer than one in six of the women's. Every pairing is one cell of this grid
 
 **▶ Live: https://dgoodenough.github.io/national-team-grid/**
 
-![Every possible international matchup, played in grey and unplayed in red](docs/assets/hero.png)
+![Every possible international fixture, played in grey and unplayed in red](docs/assets/hero.png)
 
 Every current FIFA member is a row and a column. Each cell is a pairing. Red means those two
 national teams have never played each other, in 150 years of trying.

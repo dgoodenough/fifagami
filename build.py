@@ -872,21 +872,21 @@ def social_copy(members: list[dict], played: int, possible: int) -> dict[tuple[s
     n = len(members)
     return {
         ("name", "description"):
-            f"A Scorigami-style grid of every international football matchup. Every FIFA "
+            f"A Scorigami-style grid of every international football fixture. Every FIFA "
             f"nation is a row and a column, and {played:,} of the {possible:,} possible "
             f"pairings between the {n} members have been played.",
         ("property", "og:description"):
             f"Every FIFA nation is a row and a column. {played:,} of the {possible:,} "
-            f"possible matchups have been played.",
+            f"possible fixtures have been played.",
         ("name", "twitter:description"):
             f"Every FIFA nation is a row and a column. {played:,} of the {possible:,} "
-            f"possible matchups have been played.",
+            f"possible fixtures have been played.",
         # Alt text describes the picture, which is mostly the red. Accuracy for a screen
         # reader beats matching the headline's framing.
         ("property", "og:image:alt"):
-            f"A {n} by {n} grid of international football matchups. Red marks a pairing "
+            f"A {n} by {n} grid of international football fixtures. Red marks a pairing "
             f"the two teams have never played, grey one they have, and most of the grid "
-            f"is red. The headline reads {played:,} international matchups have been played.",
+            f"is red. The headline reads {played:,} international fixtures have been played.",
     }
 
 

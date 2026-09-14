@@ -2,7 +2,7 @@
      aria-label="FIFAGami">
   <title>FIFAGami</title>
   <!-- The project in 16 pixels: a symmetric matrix with a dark diagonal, mostly empty.
-       Green = played, near-black = the void of matchups that have never happened. -->
+       Green = played, near-black = the void of fixtures that have never happened. -->
   <rect width="32" height="32" rx="5" fill="#17191c"/>
   <g shape-rendering="crispEdges">
     <!-- row 0 -->

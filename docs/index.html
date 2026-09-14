@@ -4,22 +4,22 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>FIFAGami — every international football fixture</title>
-<meta name="description" content="A Scorigami-style grid of every international football matchup. Every FIFA nation is a row and a column, and 6,520 of the 22,155 possible pairings between the 211 members have been played." />
+<meta name="description" content="A Scorigami-style grid of every international football fixture. Every FIFA nation is a row and a column, and 6,520 of the 22,155 possible pairings between the 211 members have been played." />
 <link rel="canonical" href="https://dgoodenough.github.io/national-team-grid/" />
 
 <!-- Share card. Absolute URLs: crawlers do not resolve relative ones. -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="FIFAGami" />
 <meta property="og:title" content="FIFAGami — every international football fixture" />
-<meta property="og:description" content="Every FIFA nation is a row and a column. 6,520 of the 22,155 possible matchups have been played." />
+<meta property="og:description" content="Every FIFA nation is a row and a column. 6,520 of the 22,155 possible fixtures have been played." />
 <meta property="og:url" content="https://dgoodenough.github.io/national-team-grid/" />
 <meta property="og:image" content="https://dgoodenough.github.io/national-team-grid/assets/og.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="A 211 by 211 grid of international football matchups. Red marks a pairing the two teams have never played, grey one they have, and most of the grid is red. The headline reads 6,520 international matchups have been played." />
+<meta property="og:image:alt" content="A 211 by 211 grid of international football fixtures. Red marks a pairing the two teams have never played, grey one they have, and most of the grid is red. The headline reads 6,520 international fixtures have been played." />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="FIFAGami — every international football fixture" />
-<meta name="twitter:description" content="Every FIFA nation is a row and a column. 6,520 of the 22,155 possible matchups have been played." />
+<meta name="twitter:description" content="Every FIFA nation is a row and a column. 6,520 of the 22,155 possible fixtures have been played." />
 <meta name="twitter:image" content="https://dgoodenough.github.io/national-team-grid/assets/og.png" />
 
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
@@ -93,7 +93,7 @@
         <input type="range" id="year-scrub" min="1872" max="2026" step="1" value="2026"
                autocomplete="off" aria-label="Show the grid as of year" />
       </div>
-      <p class="hint timeline-help">Scrub to watch the grid fill in — empty cells are matchups that hadn't happened yet.</p>
+      <p class="hint timeline-help">Scrub to watch the grid fill in — empty cells are fixtures that hadn't happened yet.</p>
       </div>
     </section>
 
@@ -178,11 +178,11 @@
 
     <div id="timeline-slot"></div>
 
-    <section id="view-grid" class="view" aria-label="Matchup grid">
+    <section id="view-grid" class="view" aria-label="Fixture grid">
       <div id="canvas-wrap">
         <canvas id="grid" tabindex="0" role="application"
-                aria-roledescription="matchup grid"
-                aria-label="Grid of international matchups. Use the arrow keys to move between cells, Enter to open a head-to-head, Escape to close."
+                aria-roledescription="fixture grid"
+                aria-label="Grid of international fixtures. Use the arrow keys to move between cells, Enter to open a head-to-head, Escape to close."
                 aria-describedby="grid-help"></canvas>
         <p id="grid-help" class="sr-only">
           Each cell is a pair of national teams, coloured by how many times they have played.

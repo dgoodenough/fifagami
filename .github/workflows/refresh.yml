@@ -28,7 +28,7 @@ jobs:
       - name: Rebuild data from source
         run: python build.py --refresh
 
-      # The share card carries a live number ("6,520 international matchups have been
+      # The share card carries a live number ("6,520 international fixtures have been
       # played"), and build.py stamps the same figures into index.html's meta description.
       # Regenerating both with the data is the only thing that keeps a pasted link from
       # quoting a figure that moved several international windows ago.

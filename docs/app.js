@@ -398,7 +398,7 @@ function recompute(fit) {
   closeDetail();
   closePeek();
 
-  // One team manually selected -> show that team's matchups ranked most-to-least played,
+  // One team manually selected -> show that team's fixtures ranked most-to-least played,
   // instead of a useless 1x1 grid. Two or more -> fall back to a normal sub-grid.
   if (S.manual.size === 1 && S.view === "grid") {
     renderTeamFocus([...S.manual][0]);
@@ -1280,7 +1280,7 @@ function renderTeamFocus(teamId) {
          <b style="color:var(--men-only)">${played.filter(r => r.cat === 1).length}</b> men's-only ·
          <b style="color:var(--women-only)">${played.filter(r => r.cat === 2).length}</b> women's-only ·
          <b class="never">${never.length}</b> neither</div>`
-    : `<div class="tf-title">${esc(teamLabel(team))} — matchups, most to least played</div>
+    : `<div class="tf-title">${esc(teamLabel(team))} — fixtures, most to least played</div>
        <div class="tf-sum">Played <b>${played.length}</b> of ${rows.length} opponents ·
          <b class="never">${never.length}</b> never met · ${esc(gLabel)}</div>`;
 
@@ -1730,11 +1730,11 @@ function headlineGrid(headline) {
   if (total === 0) {                       // fewer than two teams to compare
     headline.innerHTML = `<span class="big">—</span>`
       + `<span class="rest">Pick at least two teams or confederations to compare.</span>`;
-  } else if (never === 0) {                 // every possible matchup has happened
+  } else if (never === 0) {                 // every possible fixture has happened
     headline.classList.add("allplayed");
     headline.innerHTML = `<span class="big">100%</span>`
       + `<span class="rest">every one of the ${num(total)} possible <b>${esc(g)}</b> `
-      + `${pl(total, "matchup")}${esc(scope)} has been played — no unplayed pairings here.</span>`;
+      + `${pl(total, "fixture")}${esc(scope)} has been played — no unplayed pairings here.</span>`;
   } else {
     const pct = 100 * met / total;
     // Lead with what has happened. The grid already shows the absence; the headline does
@@ -1745,7 +1745,7 @@ function headlineGrid(headline) {
     const whose = (!filter && present())
       ? ` between FIFA's ${num(S.order.length)} members` : "";
     headline.innerHTML = `<span class="big">${num(met)}</span>`
-      + `<span class="rest"><b>${esc(g)}</b> ${pl(met, "matchup")} ${met === 1 ? "has" : "have"} `
+      + `<span class="rest"><b>${esc(g)}</b> ${pl(met, "fixture")} ${met === 1 ? "has" : "have"} `
       + `been played${esc(scope)}, <b>${pct.toFixed(1)}%</b> of the ${num(total)} possible `
       + `${pl(total, "pairing")}${whose}.</span>`;
   }
