@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Build the National Team Matchup Grid data artifacts.
+Build the FIFAGami data artifacts.
 
 Pipeline:
   1. Download (and cache) the source data:
@@ -598,7 +598,7 @@ def write_feeds(members: list[dict], upcoming: dict, generated: str) -> int:
     items = build_feed_items(members, upcoming, date.today().isoformat())
     title = "FIFAGami - first-ever international meetings"
     desc = ("Scheduled fixtures between national teams that have never played each other, "
-            "from the National Team Matchup Grid.")
+            "from FIFAGami.")
     pub = f"{generated}T00:00:00Z"
 
     docs.joinpath("feed.json").write_text(json.dumps({

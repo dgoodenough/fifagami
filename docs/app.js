@@ -1,6 +1,6 @@
 "use strict";
 
-/* National Team Matchup Grid — Scorigami-style heatmap of international football fixtures.
+/* FIFAGami — Scorigami-style heatmap of international football fixtures.
    Vanilla JS + Canvas. Loads pre-built JSON from data/ and renders an N×N grid where each
    cell is a pair of national teams, coloured by how many times they have met.
 

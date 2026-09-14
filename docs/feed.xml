@@ -3,7 +3,7 @@
   <channel>
     <title>FIFAGami - first-ever international meetings</title>
     <link>https://dgoodenough.github.io/national-team-grid/</link>
-    <description>Scheduled fixtures between national teams that have never played each other, from the National Team Matchup Grid.</description>
+    <description>Scheduled fixtures between national teams that have never played each other, from FIFAGami.</description>
     <language>en</language>
     <atom:link href="https://dgoodenough.github.io/national-team-grid/feed.xml" rel="self" type="application/rss+xml"/>
     <lastBuildDate>Sun, 13 Sep 2026 00:00:00 +0000</lastBuildDate>

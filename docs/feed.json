@@ -3,7 +3,7 @@
  "title": "FIFAGami - first-ever international meetings",
  "home_page_url": "https://dgoodenough.github.io/national-team-grid/",
  "feed_url": "https://dgoodenough.github.io/national-team-grid/feed.json",
- "description": "Scheduled fixtures between national teams that have never played each other, from the National Team Matchup Grid.",
+ "description": "Scheduled fixtures between national teams that have never played each other, from FIFAGami.",
  "items": [
   {
    "id": "fifagami-men-124-130-2026-09-23",
