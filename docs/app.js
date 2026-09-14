@@ -168,6 +168,38 @@ function cellColor(count) {
   return rampColor(t);
 }
 
+/* Does this platform actually draw country flags?
+
+   Segoe UI Emoji has never contained regional-indicator pair glyphs, so on Windows every
+   flag in the app renders as the two letters of the country's ISO code in boxes. The test
+   is colour: a drawn flag is hundreds of coloured pixels, while boxed letters, a lone
+   regional indicator and a tofu box all measure exactly zero. Width heuristics are
+   flakier, since they depend on the fallback font's advance widths. */
+let _flagsOk = null;
+function flagsRender() {
+  if (_flagsOk !== null) return _flagsOk;
+  _flagsOk = true;                       // a probe that cannot run must not strip good flags
+  try {
+    const c = document.createElement("canvas");
+    c.width = c.height = 24;
+    const g = c.getContext("2d", { willReadFrequently: true });
+    if (!g) return _flagsOk;
+    g.fillStyle = "#fff"; g.fillRect(0, 0, 24, 24);
+    g.fillStyle = "#000"; g.font = "20px sans-serif"; g.textBaseline = "top";
+    g.fillText("\u{1F1E7}\u{1F1F7}", 0, 0);            // Brazil, green/yellow/blue
+    const d = g.getImageData(0, 0, 24, 24).data;
+    let coloured = 0;
+    for (let i = 0; i < d.length; i += 4) {
+      const r = d[i], gr = d[i + 1], b = d[i + 2];
+      if (Math.max(r, gr, b) - Math.min(r, gr, b) > 40) coloured++;
+    }
+    _flagsOk = coloured > 20;
+  } catch {
+    /* a tainted or unavailable canvas leaves the optimistic default in place */
+  }
+  return _flagsOk;
+}
+
 /* ---------- data loading ---------- */
 async function load() {
   const [members, mMen, mWomen, defunct, upcoming] = await Promise.all([
@@ -189,6 +221,11 @@ async function load() {
   S.defunct = defunct;
   for (const m of S.members) S.byId.set(m.id, m);
   for (const m of defunct.members) S.byId.set(m.id, m);
+
+  // Windows ships no country flag emoji, so a flag there is two boxed letters. Drop them
+  // rather than print the boxes; every label already has a no-flag path, because Kosovo
+  // and Northern Ireland have no flag emoji on any platform.
+  if (!flagsRender()) for (const m of S.byId.values()) m.flag = "";
 
   S.pairs.men = buildPairMap(mMen.pairs, defunct.pairs_men);
   S.pairs.women = buildPairMap(mWomen.pairs, defunct.pairs_women);
