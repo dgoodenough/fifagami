@@ -212,20 +212,21 @@ def render_og() -> Path:
     d.rectangle([0, 0, PANEL, H], fill=CHROME)
     d.line([(PANEL, 0), (PANEL, H)], fill=hexrgb(GRID_STRONG), width=1)
     x, y = 72, 132
-    # --neg, not --never-hi: the deeper "red floods the void" red is tuned for a wall of
-    # cells, and goes muddy as a headline numeral against near-black at thumbnail size.
-    d.text((x, y), f"{never:,}", font=load_font(116), fill=hexrgb("#ef6f64"))
+    # Green, because the numeral counts what has happened. It is the same green the grid
+    # uses for a played pairing, and it holds up against near-black at thumbnail size.
+    d.text((x, y), f"{len(matrix['pairs']):,}", font=load_font(116),
+           fill=hexrgb(VARS["--ramp-100"]))
     y += 132
     for line, font, fill in (
         ("international matchups", load_font(38), (231, 234, 240)),
-        ("have never been played", load_font(38), (231, 234, 240)),
+        ("have been played", load_font(38), (231, 234, 240)),
     ):
         d.text((x, y), line, font=font, fill=fill)
         y += 48
     y += 18
-    d.text((x, y), f"Only {pct:.0f}% of the {possible:,} possible pairings",
+    d.text((x, y), f"{pct:.0f}% of the {possible:,} possible pairings",
            font=load_font(23, bold=False), fill=(154, 163, 178))
-    d.text((x, y + 32), "between FIFA's 211 members have ever happened.",
+    d.text((x, y + 32), f"between FIFA's {n} members. The rest is the picture.",
            font=load_font(23, bold=False), fill=(154, 163, 178))
 
     d.text((x, H - 88), "NATIONAL TEAM MATCHUP GRID",
@@ -236,7 +237,7 @@ def render_og() -> Path:
 
     out = DOCS / "assets/og.png"
     img.save(out)
-    print(f"wrote {out} ({img.width}x{img.height}, {never:,} never-played)")
+    print(f"wrote {out} ({img.width}x{img.height}, {len(matrix['pairs']):,} played)")
     return out
 
 

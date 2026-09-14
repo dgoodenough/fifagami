@@ -1298,7 +1298,7 @@ function renderTeamFocus(teamId) {
 
   const headline = $("headline");
   headline.classList.toggle("combined", combined);
-  headline.classList.remove("allplayed");
+  headline.classList.remove("allplayed", "played");
   if (combined) {
     const both = played.filter(r => r.cat === 3).length;
     headline.innerHTML = `<span class="big">${both}</span>`
@@ -1310,9 +1310,11 @@ function renderTeamFocus(teamId) {
       + `<span class="rest"><b>${esc(team.name)}</b> has never played a <b>${esc(gLabel)}</b> `
       + `international against anyone.</span>`;
   } else {
-    headline.innerHTML = `<span class="big">${never.length}</span>`
-      + `<span class="rest">opponents <b>${esc(team.name)}</b> has never played `
-      + `(${esc(gLabel)}) — they've met <b>${played.length}</b> of ${rows.length} possible.</span>`;
+    // Same framing as the grid headline: count the opponents met, not the ones missing.
+    headline.classList.add("played");
+    headline.innerHTML = `<span class="big">${played.length}</span>`
+      + `<span class="rest">${pl(played.length, "opponent")} <b>${esc(team.name)}</b> `
+      + `has played (${esc(gLabel)}), out of ${rows.length} possible.</span>`;
   }
 }
 
@@ -1707,7 +1709,7 @@ function updateStats() { updateHeadline(); }
 
 function updateHeadline() {
   const headline = $("headline");
-  headline.classList.remove("allplayed", "combined");
+  headline.classList.remove("allplayed", "combined", "played");
   if (S.view === "fixtures") return headlineFixtures(headline);
   if (S.view === "oneoffs") return headlineOneOffs(headline);
   if (S.view === "misses") return headlineMisses(headline);
@@ -1717,8 +1719,9 @@ function updateHeadline() {
 }
 
 function headlineGrid(headline) {
-  const { total } = metCounts();
-  const met = S.gender === "men" ? metCounts().men : metCounts().women;
+  const counts = metCounts();
+  const total = counts.total;
+  const met = S.gender === "men" ? counts.men : counts.women;
   const never = total - met;
   const g = genderWord();
   const filter = (S.manual.size || S.showConfeds.size < S.confedOrder.length) ? " in this view" : "";
@@ -1734,11 +1737,17 @@ function headlineGrid(headline) {
       + `${pl(total, "matchup")}${esc(scope)} has been played — no unplayed pairings here.</span>`;
   } else {
     const pct = 100 * met / total;
-    headline.innerHTML = `<span class="big">${num(never)}</span>`
-      + `<span class="rest"><b>${esc(g)}</b> ${pl(never, "matchup")} ${never === 1 ? "has" : "have"} `
-      + `<b>never</b> been played${esc(scope)} — just <b>${pct.toFixed(1)}%</b> of the `
-      + `${num(total)} possible ${pl(total, "pairing")} `
-      + `${total === 1 ? "has" : "have"} ever happened.</span>`;
+    // Lead with what has happened. The grid already shows the absence; the headline does
+    // not need to count it too.
+    headline.classList.add("played");
+    // Only name the membership when the grid really is all of it: under a filter the count
+    // is the subset, not FIFA, and scrubbed back it is an anachronism.
+    const whose = (!filter && present())
+      ? ` between FIFA's ${num(S.order.length)} members` : "";
+    headline.innerHTML = `<span class="big">${num(met)}</span>`
+      + `<span class="rest"><b>${esc(g)}</b> ${pl(met, "matchup")} ${met === 1 ? "has" : "have"} `
+      + `been played${esc(scope)}, <b>${pct.toFixed(1)}%</b> of the ${num(total)} possible `
+      + `${pl(total, "pairing")}${whose}.</span>`;
   }
 }
 

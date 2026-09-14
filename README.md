@@ -3,12 +3,12 @@
 Morocco have never played Mexico. Spain have never played Senegal. Japan have never played
 Portugal. Seventy-seven pairs of top-40 national teams have never met at all.
 
-Only **29% of the 22,155 possible men's international fixtures have ever been played**. In the
-women's game it is 13%. This is a picture of the rest.
+**6,520 of the 22,155 possible men's international fixtures have been played**, 29% of them.
+In the women's game it is 2,822, or 13%. Every pairing is one cell of this grid.
 
 **▶ Live: https://dgoodenough.github.io/national-team-grid/**
 
-![Every international matchup that has never been played](docs/assets/hero.png)
+![Every possible international matchup, played in grey and unplayed in red](docs/assets/hero.png)
 
 Every current FIFA member is a row and a column. Each cell is a pairing. Red means those two
 national teams have never played each other, in 150 years of trying.

@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import sys
 import urllib.request
 from collections import deque
@@ -863,6 +864,55 @@ def write_facts() -> int:
     return len(facts)
 
 
+# --- Derived artifact: the social copy in index.html ---------------------------
+# The share card is regenerated from the data every refresh. The meta description sat next
+# to it quoting a count somebody typed in by hand, which goes wrong the moment two teams
+# play. These four tags are written from the archives instead.
+def social_copy(members: list[dict], played: int, possible: int) -> dict[tuple[str, str], str]:
+    n = len(members)
+    return {
+        ("name", "description"):
+            f"A Scorigami-style grid of every international football matchup. Every FIFA "
+            f"nation is a row and a column, and {played:,} of the {possible:,} possible "
+            f"pairings between the {n} members have been played.",
+        ("property", "og:description"):
+            f"Every FIFA nation is a row and a column. {played:,} of the {possible:,} "
+            f"possible matchups have been played.",
+        ("name", "twitter:description"):
+            f"Every FIFA nation is a row and a column. {played:,} of the {possible:,} "
+            f"possible matchups have been played.",
+        # Alt text describes the picture, which is mostly the red. Accuracy for a screen
+        # reader beats matching the headline's framing.
+        ("property", "og:image:alt"):
+            f"A {n} by {n} grid of international football matchups. Red marks a pairing "
+            f"the two teams have never played, grey one they have, and most of the grid "
+            f"is red. The headline reads {played:,} international matchups have been played.",
+    }
+
+
+def stamp_index_html() -> int:
+    """Write the live figures into docs/index.html's social copy. Returns tags rewritten."""
+    path = ROOT / "docs" / "index.html"
+    html = path.read_text(encoding="utf-8")
+    members = json.loads((OUT / "members.json").read_text(encoding="utf-8"))["members"]
+    n = len(members)
+    possible = n * (n - 1) // 2
+    played = len(json.loads((OUT / "matrix_men.json").read_text(encoding="utf-8"))["pairs"])
+
+    written = 0
+    for (attr, key), text in social_copy(members, played, possible).items():
+        if '"' in text:
+            raise SystemExit(f"social copy for {key} contains a quote; it goes in an attribute")
+        pattern = rf'(<meta {attr}="{re.escape(key)}" content=")[^"]*(")'
+        html, count = re.subn(pattern, lambda m: m.group(1) + text + m.group(2), html)
+        if count != 1:
+            raise SystemExit(f"expected exactly one <meta {attr}=\"{key}\"> in index.html, "
+                             f"found {count}")
+        written += count
+    path.write_text(html, encoding="utf-8")
+    return written
+
+
 # --- Validation --------------------------------------------------------------
 class BuildError(AssertionError):
     """An artifact is wrong enough that it must not be published."""
@@ -1006,6 +1056,7 @@ def derive_only() -> int:
     log(f"  feed.json + feed.xml: {n_feed} upcoming first-ever meetings")
 
     log(f"  facts.json: {write_facts()} facts")
+    log(f"  index.html: {stamp_index_html()} social meta tags restamped")
 
     for note in validate_artifacts():
         log(f"  note: {note}")
@@ -1143,6 +1194,7 @@ def main() -> int:
     # The lines worth repeating, derived from the archives just written so they refresh
     # with the data instead of being hand-maintained prose that quietly goes wrong.
     n_facts = write_facts()
+    n_meta = stamp_index_html()
 
     # --- Report ---
     log("")
@@ -1163,6 +1215,7 @@ def main() -> int:
         f"men {y_men} / {ym_kb:.0f} KB, women {y_wom} / {yw_kb:.0f} KB")
     log(f"  feed.json + feed.xml: {n_feed} upcoming first-ever meetings")
     log(f"  facts.json: {n_facts} facts")
+    log(f"  index.html: {n_meta} social meta tags restamped")
     id_to_name = {m["id"]: m["name"] for m in members}
     log(f"  upcoming FIFAGami (scheduled first meetings): "
         f"men {len(upcoming_json['men'])}, women {len(upcoming_json['women'])}")
