@@ -65,6 +65,9 @@ let DPR = window.devicePixelRatio || 1;
 // Per-day cache-buster: data refreshes daily, so re-fetch fresh once a day (cached within the day).
 const VBUST = "?d=" + new Date().toISOString().slice(0, 10);
 const mqMobile = window.matchMedia(MOBILE_Q);
+// Must stay in step with the rail media query in style.css.
+const RAIL_Q = "(min-width: 1000px) and (min-aspect-ratio: 7/5)";
+const mqRail = window.matchMedia(RAIL_Q);
 const mqReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 /* ---------- small helpers ---------- */
@@ -2058,6 +2061,23 @@ function setTimelineOpen(open) {
   btn.setAttribute("aria-expanded", open ? "true" : "false");
 }
 
+/* MOCKUP: on a wide screen the headline, fact strip and view tabs move into the rail, so
+   nothing sits above the grid and the square is bound by the window height rather than by
+   whatever chrome happens to be stacked on top of it. Same reparenting trick as the
+   timeline, so the markup stays one tree and mobile is unaffected. */
+let _chromeHome = null;
+function placeChrome() {
+  const stage = $("stage"), panel = $("panel"), body = $("panel-body");
+  if (!stage || !panel || !body) return;
+  const parts = ["headline", "factstrip", "stage-bar"].map($).filter(Boolean);
+  if (!_chromeHome) _chromeHome = parts.map(el => ({ el, next: el.nextSibling }));
+  if (mqRail.matches) {
+    for (const el of parts) panel.insertBefore(el, body);
+  } else {
+    for (const { el, next } of _chromeHome) stage.insertBefore(el, next);
+  }
+}
+
 /* ---------- controls ---------- */
 // A roving-tabindex tab strip: one stop in the tab order, arrow keys between the options.
 function wireTabs(container, onPick) {
@@ -2227,8 +2247,12 @@ function buildControls() {
     + `${esc(S.meta.rankingWomen || "—")}.`;
 
   placeTimeline();
+  placeChrome();
   mqMobile.addEventListener("change", () => {
-    placeTimeline(); resize(); clampPan(); draw();
+    placeTimeline(); placeChrome(); resize(); clampPan(); draw();
+  });
+  mqRail.addEventListener("change", () => {
+    placeChrome(); resize(); clampPan(); draw();
   });
 }
 
