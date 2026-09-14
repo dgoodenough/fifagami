@@ -228,6 +228,27 @@ class TestSiteAssets(unittest.TestCase):
             self.assertTrue(name in html, f"index.html should reference {name}")
             self.assertTrue((docs / name).exists(), f"docs/{name} is missing")
 
+    def test_index_html_social_copy_matches_the_data(self):
+        """build.py stamps live figures into the meta description; they can go stale if the
+        refresh stops committing index.html, and a wrong number there is what gets pasted
+        into Slack and search results."""
+        html = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
+        members = load("members.json")["members"]
+        n = len(members)
+        possible = n * (n - 1) // 2
+        played = len(load("matrix_men.json")["pairs"])
+        for tag, text in build.social_copy(members, played, possible).items():
+            self.assertTrue(text in html,
+                            f"<meta {tag[0]}=\"{tag[1]}\"> is out of date; "
+                            f"run python build.py --derive")
+
+    def test_the_refresh_commits_the_stamped_index(self):
+        wf = (ROOT / ".github/workflows/refresh.yml").read_text(encoding="utf-8")
+        commit_step = wf.split("git add", 1)[1].split("\n", 1)[0]
+        self.assertTrue("docs/index.html" in commit_step,
+                        f"refresh.yml must commit the restamped index.html; git add is:"
+                        f"{commit_step}")
+
     def test_the_share_card_is_regenerated_by_the_daily_refresh(self):
         """The card quotes a live figure ("15,635 ... have never been played").
 
@@ -437,10 +458,14 @@ class TestReadme(unittest.TestCase):
         self.assertTrue(f"{possible:,} possible men's international fixtures" in self.flat,
                         f"README should quote {possible:,} possible fixtures")
         for g, claimed in (("men", 29), ("women", 13)):
-            pct = round(100 * len(self.counts[g]) / possible)
+            played = len(self.counts[g])
+            pct = round(100 * played / possible)
             self.assertEqual(pct, claimed,
                              f"README claims {claimed}% of the {g}'s fixtures have been "
                              f"played; it is now {pct}%.")
+            # The opening also quotes the raw counts, which move faster than the percentage.
+            self.assertTrue(f"{played:,}" in self.flat,
+                            f"README should quote {played:,} played {g}'s fixtures")
 
     def test_the_counted_claims_still_hold(self):
         import itertools
