@@ -218,7 +218,7 @@ def render_og() -> Path:
            fill=hexrgb(VARS["--ramp-100"]))
     y += 132
     for line, font, fill in (
-        ("international matchups", load_font(38), (231, 234, 240)),
+        ("international fixtures", load_font(38), (231, 234, 240)),
         ("have been played", load_font(38), (231, 234, 240)),
     ):
         d.text((x, y), line, font=font, fill=fill)
