@@ -561,3 +561,53 @@ body[data-never="1"] #sw-never { background: var(--never-hi); border-color: var(
   #fact { transition: opacity .18s ease; }
 }
 #factstrip.swapping #fact { opacity: 0; }
+
+/* ---- MOCKUP: grid left, everything else in a right rail -----------------------
+   The square was bound by height, not width: 159px of headline, fact strip and
+   view tabs stacked above it while ~400px of width went unused inside the canvas.
+   Moving that chrome out of the vertical stack and into the rail gives the grid
+   the full viewport height, which is the largest a square can be without scrolling. */
+/* Gated on shape, not just width. The rail wins only when the window is wider than it is
+   tall by a good margin: the square becomes min(width - rail, height), so on a nearly
+   square window a 380px rail costs more than the 159px of stacked chrome it removes. At
+   721x800 the naive version produced a 341px grid where the stacked layout gives 560. */
+@media (min-width: 1000px) and (min-aspect-ratio: 7/5) {
+  #app { flex-direction: row; }
+  #stage { order: 1; }
+  #panel {
+    order: 2;
+    width: 380px; min-width: 380px;
+    border-right: none; border-left: 1px solid var(--grid-strong);
+    padding: 0 0 24px;                    /* chrome sits flush; controls get their own pad */
+    display: flex; flex-direction: column;
+  }
+  /* The reparented chrome, now stacked down the rail. */
+  #panel > #headline { flex: none; padding: 14px 16px; }
+  #panel > #headline .big { font-size: 2.6rem; }
+  #panel > #headline .rest { font-size: .88rem; max-width: none; }
+  #panel > #factstrip { flex: none; padding: 10px 16px; }
+  #panel > #factstrip #fact { flex-basis: 100%; font-size: .85rem; }
+  #panel > #stage-bar { flex: none; padding: 0 10px; }
+  /* Five tabs will not sit on one 348px line, and letting them wrap leaves a lone
+     "Connect" stranded on row two. A 3-column grid makes two even rows instead. */
+  #panel > #stage-bar { flex-direction: column; align-items: stretch; gap: 0; padding: 0; }
+  #panel > #stage-bar #views {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+    overflow-x: visible; border-bottom: 1px solid var(--grid);
+  }
+  #panel > #stage-bar #views button { justify-content: center; padding: 10px 6px 8px; }
+  #panel > #stage-bar #stage-tools {
+    display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px;
+  }
+  #panel #panel-body { padding: 0 16px; overflow-y: auto; flex: 1; min-height: 0; }
+
+  /* The head-to-head is anchored to the viewport's right edge, which used to put it over
+     the grid. With the rail there it landed on the controls instead, so pull it clear:
+     it floats over the grid, which now has the room, and the rail stays readable. */
+  #detail { right: calc(380px + 18px); max-width: calc(100vw - 380px - 36px); }
+  #panel-head { flex: none; padding: 14px 16px 12px; border-bottom: 1px solid var(--grid); }
+
+  /* The stage is now nothing but the view, so the square gets the whole window. */
+  #stage { padding: 0; }
+  .view { flex: 1; min-height: 0; }
+}
