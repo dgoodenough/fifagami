@@ -54,10 +54,19 @@ const S = {
   cell: 20, tx: 0, ty: 0,
   hover: null,                       // {r, c} under the mouse
   focus: null,                       // {r, c} under keyboard focus
+  // Mid-fold the page has already moved to the new dataset, but the frames still in flight
+  // are painted as the split square. These are that override, and nothing else reads them.
+  paintMode: null,                   // which archive(s) colour the cells
+  paintScale: null,                  // which mode's ramp scale the colours are read against
+  folding: false,
 };
 
 const canvas = document.getElementById("grid");
-const ctx = canvas.getContext("2d");
+const mainCtx = canvas.getContext("2d");
+/* Every paint goes through this one binding. The fold has to draw the same grid in three
+   datasets at once, so paintTo() aims it at an offscreen canvas for the length of one
+   synchronous draw and then puts it back. */
+let ctx = mainCtx;
 const tooltip = document.getElementById("tooltip");
 const canvasWrap = document.getElementById("canvas-wrap");
 const live = document.getElementById("live");
@@ -156,10 +165,20 @@ function rampColor(t) {
   const last = R[R.length - 1][1];
   return `rgb(${last[0]},${last[1]},${last[2]})`;
 }
-function cellColor(count) {
+/* The top of the meetings ramp.
+
+   On its own, each archive is normalised to its own busiest fixture, so the women's grid
+   uses the full range. In the split square the two halves are read against each other, so
+   they share one scale: the women's half comes out genuinely paler, which is the point. */
+function rampMax(gender = S.gender) {
+  const mode = S.paintScale || S.gender;
+  return mode === "both" ? Math.max(S.maxCount.men, S.maxCount.women)
+                         : S.maxCount[dataGender(gender)];
+}
+function cellColor(count, gender = S.gender) {
   const never = S.highlightNever ? getCss("--never-hi") : getCss("--never");
   if (!count) return never;
-  const t = Math.log1p(count) / Math.log1p(S.maxCount[S.gender]);
+  const t = Math.log1p(count) / Math.log1p(rampMax(gender));
   if (S.highlightNever) {            // de-emphasise played cells to spotlight the empties
     const [r0, g0, b0] = hexToRgb(getCss("--paper-2"));
     const [r1, g1, b1] = hexToRgb(getCss("--ink-3"));
@@ -282,6 +301,12 @@ function buildPairMap(pairs, defunctPairs) {
 
 const isCombined = () => S.gender === "both";
 const dataGender = g => (g === "both" ? "men" : g);
+// What the canvas is painting. Normally the chosen dataset; mid-fold, the split square.
+const gridMode = () => S.paintMode || S.gender;
+/* The split square. Every pairing appeared twice in a symmetric matrix, so half of the
+   grid was only ever a mirror of the other half. Above the diagonal is now the men's
+   record and below it the women's, and the mirror is spent on the second game instead. */
+const halfGender = (r, c) => (c > r ? "men" : c < r ? "women" : null);
 function pairKey(a, b) { return a < b ? `${a},${b}` : `${b},${a}`; }
 function present() { return S.year == null || S.year >= S.maxYear; }
 
@@ -327,30 +352,36 @@ function countsExact() {
     : !!S.yearsByPair[dataGender(S.gender)]);
 }
 
-function upcomingInfo(a, b) {
-  return isCombined() ? null : S.upcoming[S.gender].get(pairKey(a, b)) || null;
+/* A scheduled first meeting belongs to one archive, which is why combined mode used to
+   have none to show. In the split square every cell is single-archive again, so the caller
+   says which one it is asking about. */
+function upcomingInfo(a, b, gender = S.gender) {
+  return gender === "both" ? null : S.upcoming[gender].get(pairKey(a, b)) || null;
 }
 // A scheduled first meeting still in the future (or today) per the client's clock.
-function isUpcoming(a, b) { const u = upcomingInfo(a, b); return !!u && u[0] >= S.today; }
+function isUpcoming(a, b, gender = S.gender) {
+  const u = upcomingInfo(a, b, gender);
+  return !!u && u[0] >= S.today;
+}
 
 // Has this team played anyone at all in the active archive? An entire empty row is a
 // different fact from "these two have never met", and the site says so.
 function hasAnyMatches(id, gender = S.gender) {
-  return isCombined()
+  return gender === "both"
     ? (S.everPlayed.men.has(id) || S.everPlayed.women.has(id))
     : S.everPlayed[gender].has(id);
 }
 // Year of a team's first ever match, or null if it has never played.
 function debutYear(id, gender = S.gender) {
-  if (!isCombined()) return S.debut[gender].get(id) ?? null;
+  if (gender !== "both") return S.debut[gender].get(id) ?? null;
   const a = S.debut.men.get(id), b = S.debut.women.get(id);
   if (a == null) return b ?? null;
   if (b == null) return a;
   return Math.min(a, b);
 }
-function notYetDebuted(id) {
+function notYetDebuted(id, gender = S.gender) {
   if (present()) return false;
-  const y = debutYear(id);
+  const y = debutYear(id, gender);
   return y == null ? false : y > S.year;
 }
 
@@ -388,18 +419,11 @@ function rankOf(m) {
   return r == null ? Infinity : r;
 }
 
-// Combined view: which datasets a pair has met in, as of the scrubber year.
-// Bitmask 1 = men, 2 = women, so 3 = both, 0 = neither.
+// Which datasets a pair has met in, as of the scrubber year. Bitmask 1 = men, 2 = women,
+// so 3 = both, 0 = neither. The split square says this with geometry; the single-team card,
+// which is a list and has no diagonal to work with, still says it with colour.
 function metCategory(a, b) {
   return (metAsOf(a, b, "men") ? 1 : 0) | (metAsOf(a, b, "women") ? 2 : 0);
-}
-function combinedColor(a, b) {
-  switch (metCategory(a, b)) {
-    case 3: return getCss("--both");
-    case 1: return getCss("--men-only");
-    case 2: return getCss("--women-only");
-    default: return getCss("--never");
-  }
 }
 
 /* ---------- what's on screen ---------- */
@@ -435,6 +459,7 @@ const scopeNote = () => (isFiltered() ? " (in the current filter)" : "");
 const asOfNote = () => (present() ? "" : ` as of ${S.year}`);
 
 function recompute(fit) {
+  if (S.folding) endFold();
   closeDetail();
   closePeek();
 
@@ -589,6 +614,7 @@ function clampPan() {
 
 /* ---------- rendering ---------- */
 function resize() {
+  if (S.folding) endFold();
   DPR = window.devicePixelRatio || 1;
   canvas.width = Math.floor(canvas.clientWidth * DPR);
   canvas.height = Math.floor(canvas.clientHeight * DPR);
@@ -603,8 +629,9 @@ function draw() {
   // canvas ends up shorter than its backing store and the uncleared strip shows stale pixels
   // ("artifacts at the bottom") that persist across redraws/zooms. Re-sync if mismatched.
   const dpr = window.devicePixelRatio || 1;
-  if (canvas.width !== Math.floor(canvas.clientWidth * dpr) ||
-      canvas.height !== Math.floor(canvas.clientHeight * dpr)) {
+  if (ctx === mainCtx &&
+      (canvas.width !== Math.floor(canvas.clientWidth * dpr) ||
+       canvas.height !== Math.floor(canvas.clientHeight * dpr))) {
     resize();
   }
   const n = S.order.length;
@@ -633,18 +660,22 @@ function draw() {
   const nodataCol = getCss("--nodata");
   const predebutCol = getCss("--predebut");
   const atPresent = present();
-  const combined = isCombined();
+  const mode = gridMode();
+  const split = mode === "both";
   const span = Math.ceil(cell) + (cell > 7 ? 0 : 1);
-  // Precompute the per-row facts so the inner loop stays a lookup, not a function call.
-  const rowSilent = [], rowPre = [];
-  for (let r = r0; r < r1; r++) {
-    rowSilent[r] = !hasAnyMatches(S.order[r]);
-    rowPre[r] = notYetDebuted(S.order[r]);
-  }
-  const colSilent = [], colPre = [];
-  for (let c = c0; c < c1; c++) {
-    colSilent[c] = !hasAnyMatches(S.order[c]);
-    colPre[c] = notYetDebuted(S.order[c]);
+  /* Precompute the per-team facts so the inner loop stays a lookup, not a function call.
+     The split square asks them of two archives, not one: a team that has never played a
+     women's international is silent in the lower half and perfectly ordinary in the
+     upper. One array per archive, covering every row and column on screen. */
+  const archives = split ? ["men", "women"] : [dataGender(mode)];
+  const silent = {}, predebut = {};
+  const lo = Math.min(r0, c0), hi = Math.max(r1, c1);
+  for (const g of archives) {
+    const sil = silent[g] = [], pre = predebut[g] = [];
+    for (let i = lo; i < hi; i++) {
+      sil[i] = !hasAnyMatches(S.order[i], g);
+      pre[i] = notYetDebuted(S.order[i], g);
+    }
   }
   for (let r = r0; r < r1; r++) {
     const a = S.order[r];
@@ -654,41 +685,44 @@ function draw() {
       let col;
       if (a === b) {
         col = diag;
-      } else if (combined) {
-        const cat = metCategory(a, b);
-        col = cat ? combinedColor(a, b)
-          : (rowSilent[r] || colSilent[c]) ? nodataCol
-            : (rowPre[r] || colPre[c]) ? predebutCol
-              : getCss("--never");
-      } else if (metAsOf(a, b)) {
-        col = cellColor(countAsOf(a, b));
-      } else if (S.showUpcoming && atPresent && isUpcoming(a, b)) {
-        col = upcomingCol;
-      } else if (rowSilent[r] || colSilent[c]) {
-        // Not "these two have never met" — one of them has never played anyone at all.
-        col = nodataCol;
-      } else if (rowPre[r] || colPre[c]) {
-        col = predebutCol;                    // hadn't debuted yet at the scrubbed year
       } else {
-        col = cellColor(0);
+        const g = split ? halfGender(r, c) : mode;
+        const sil = silent[g], pre = predebut[g];
+        if (metAsOf(a, b, g)) {
+          col = cellColor(countAsOf(a, b, g), g);
+        } else if (S.showUpcoming && atPresent && isUpcoming(a, b, g)) {
+          col = upcomingCol;
+        } else if (sil[r] || sil[c]) {
+          // Not "these two have never met" — one of them has never played anyone at all.
+          col = nodataCol;
+        } else if (pre[r] || pre[c]) {
+          col = predebutCol;                  // hadn't debuted yet at the scrubbed year
+        } else {
+          col = cellColor(0, g);
+        }
       }
       ctx.fillStyle = col;
       ctx.fillRect(Math.floor(ox + c * cell), Math.floor(y), span, span);
     }
   }
+  /* The marks belong to the split square as a destination, not to the frames a fold
+     passes through. Drawing them only when Both is the chosen dataset means a fold lands
+     on exactly what the canvas settles to, with no label left over to pop; on the way in
+     they appear under the frame the switch is still holding over the first moments. */
+  if (split && isCombined()) drawFoldLine(n, ox, oy, cell);
   // outline the grid extent so paper-white "never" cells read as part of the grid
   ctx.strokeStyle = getCss("--grid-strong");
   ctx.lineWidth = 1;
   ctx.strokeRect(ox + .5, oy + .5, n * cell - 1, n * cell - 1);
-  // hover crosshair
-  const cross = S.hover || S.focus;
+  // hover crosshair — the live canvas only; a flap should not fold a crosshair with it
+  const cross = ctx === mainCtx ? (S.hover || S.focus) : null;
   if (cross) {
     ctx.fillStyle = getCss("--crosshair");
     ctx.fillRect(MARGIN, oy + cross.r * cell, gw, cell);
     ctx.fillRect(ox + cross.c * cell, MARGIN, cell, gh);
   }
   // keyboard focus gets a hard outline as well — a wash is not a focus indicator
-  if (S.focus) {
+  if (S.focus && ctx === mainCtx) {
     ctx.strokeStyle = getCss("--pos");
     ctx.lineWidth = 2;
     ctx.strokeRect(ox + S.focus.c * cell - 1, oy + S.focus.r * cell - 1,
@@ -741,6 +775,42 @@ function drawSeparators(n, ox, oy, cell, gw, gh) {
     ctx.moveTo(x0, Math.round(y) + .5); ctx.lineTo(x1, Math.round(y) + .5);
     ctx.stroke();
   }
+}
+
+/* The fold line, and which game lies on which side of it.
+
+   Once the two halves carry different archives the square stops being self-explanatory:
+   the same pairing is above the diagonal in the men's record and below it in the women's,
+   and nothing on the canvas says so. The diagonal gets a hard rule and each half gets its
+   name — sized to the grid, haloed so it survives both a red field and a pale one, and
+   faint enough to read as a watermark rather than a label. */
+function drawFoldLine(n, ox, oy, cell) {
+  const L = n * cell;
+  ctx.save();
+  ctx.strokeStyle = getCss("--grid-strong");
+  ctx.lineWidth = Math.max(1, Math.min(3, cell * .3));
+  ctx.beginPath();
+  ctx.moveTo(ox, oy);
+  ctx.lineTo(ox + L, oy + L);
+  ctx.stroke();
+
+  if (L >= 190) {
+    const size = Math.max(12, Math.min(58, L / 15));
+    ctx.font = `700 ${size}px ui-sans-serif, system-ui, -apple-system, sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.lineJoin = "round";
+    ctx.lineWidth = Math.max(3, size / 4);
+    ctx.strokeStyle = getCss("--bg");
+    ctx.fillStyle = getCss("--ink");
+    ctx.globalAlpha = .62;
+    for (const [text, fx, fy] of [["MEN'S", .7, .28], ["WOMEN'S", .3, .72]]) {
+      const x = ox + L * fx, y = oy + L * fy;
+      ctx.strokeText(text, x, y);
+      ctx.fillText(text, x, y);
+    }
+  }
+  ctx.restore();
 }
 
 // Flags are drawn only when the cells are big enough to have earned the space. Canvas
@@ -834,7 +904,7 @@ function drawLegend() {
 function drawLegendTicks() {
   const host = $("legend-ticks");
   if (!host) return;
-  const max = S.maxCount[dataGender(S.gender)];
+  const max = rampMax(S.gender);
   const stops = [1, 3, 10, 30, 100, 300, 1000].filter(v => v < max).concat([max]);
   const denom = Math.log1p(max);
   host.innerHTML = stops.map(v => {
@@ -845,17 +915,154 @@ function drawLegendTicks() {
   }).join("");
 }
 
-// Swap the meetings-ramp legend for the 4-category key in combined view (and vice versa).
+/* The split square is read on the same ramp as a single dataset — the two halves share one
+   scale, which is the whole reason they can be compared across the diagonal — so the ramp
+   and its keys stay put, and Both adds a key for which game is on which side. */
 function updateLegend() {
   // The never swatch has two appearances, because the cells do: paper when the grid is
   // coloured by meetings, red when the empties are flooded. CSS reads this flag.
   document.body.dataset.never = S.highlightNever ? "1" : "0";
-  const rampBox = $("legend-ramp"), comb = $("legend-combined");
-  if (rampBox && comb) { rampBox.hidden = isCombined(); comb.hidden = !isCombined(); }
+  const split = $("legend-split");
+  if (split) split.hidden = !isCombined();
   const lm = $("legend-max");
-  if (lm && !isCombined()) lm.textContent = `1 → ${S.maxCount[S.gender]}`;
+  if (lm) lm.textContent = `1 → ${rampMax(S.gender)}`;
   drawLegend();
   drawLegendTicks();
+}
+
+/* ---------- the fold ----------
+
+   The square was always symmetric, so half of it only ever mirrored the other half. Now
+   that the mirror is spent on the women's game, each dataset is the *same* split square
+   with one half folded back over the other: the men's grid is the split square with the
+   men's record folded down across the women's half, the women's grid is its opposite, and
+   *Both* is the square with both flaps folded up and out of the way.
+
+   So a dataset switch is one angle per flap. A flap at 0° lies flat over its own half; at
+   90° it is edge-on to the viewer, a line of no width, and gone. Nothing is animated past
+   that: the two vertices on the diagonal never move and the third slides in to meet them,
+   so the whole fold is spent on the half that is actually being revealed or covered.
+
+   Men's straight to women's is the one switch that moves both flaps, and they take it in
+   turn rather than together: the men's half stands up first and the women's follows it
+   down, overlapping only where both are near edge-on. That costs half a second more and
+   buys the one thing the switch should show — the split square, in passing, on the way. */
+const FOLD_MS = 600;
+const FOLD_DOUBLE_MS = 900;          // one flap up, then the other down
+const FOLD_EASE = "cubic-bezier(.58,.02,.28,1)";
+const FLAP_ANGLE = {
+  men:   { lower: 0,  upper: 90 },
+  women: { lower: 90, upper: 0 },
+  both:  { lower: 90, upper: 90 },
+};
+let _foldTimer = null;
+
+// draw() paints through `ctx`. A flap is the same grid in another dataset on another
+// canvas, so point it there for one synchronous draw and put everything back.
+function paintTo(target, mode, scale) {
+  const homeCtx = ctx, homeMode = S.paintMode, homeScale = S.paintScale;
+  ctx = target; S.paintMode = mode; S.paintScale = scale;
+  try { draw(); } finally { ctx = homeCtx; S.paintMode = homeMode; S.paintScale = homeScale; }
+}
+
+function renderFlap(mode, scale) {
+  const c = document.createElement("canvas");
+  c.width = canvas.width;
+  c.height = canvas.height;
+  const g = c.getContext("2d");
+  g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  paintTo(g, mode, scale);
+  return c;
+}
+
+/* A flap is the whole canvas clipped to one triangle of the grid square. clip-path is
+   applied in the element's own coordinates, before the transform, so the fold swings the
+   triangle rather than the hole it is cut from — and the hinge is the square's diagonal,
+   which is the (1,1,0) axis through its top-left corner. */
+function flapClip(half, ox, oy, L) {
+  const pts = half === "lower"
+    ? [[ox, oy], [ox, oy + L], [ox + L, oy + L]]
+    : [[ox, oy], [ox + L, oy], [ox + L, oy + L]];
+  return `polygon(${pts.map(([x, y]) => `${x}px ${y}px`).join(", ")})`;
+}
+
+// Put the canvas back in charge, whether the fold finished or something interrupted it.
+function endFold() {
+  clearTimeout(_foldTimer);
+  _foldTimer = null;
+  const host = $("fold");
+  if (host) { host.textContent = ""; host.hidden = true; }
+  if (!S.folding && S.paintMode == null) return;
+  S.folding = false;
+  S.paintMode = null;
+  S.paintScale = null;
+  draw();
+}
+
+/* Switch datasets, folding if there is a fold to show. The panel, the headline and the
+   legend move at once; only the canvas lags, painting the split square while the flaps
+   are in the air. */
+function foldGender(next) {
+  const prev = S.gender;
+  endFold();
+  const host = $("fold");
+  // Nothing to fold: no flap host, no change, a list view, the single-team card, a grid too
+  // small to read as a square, or a visitor who has asked for less motion.
+  const foldable = host && next !== prev && S.view === "grid" && S.manual.size !== 1
+    && S.order.length > 1 && !mqReduceMotion.matches;
+  if (!foldable) { setGender(next); return; }
+
+  const leaving = document.createElement("canvas");   // the frame we are walking away from
+  leaving.width = canvas.width;
+  leaving.height = canvas.height;
+  leaving.getContext("2d").drawImage(canvas, 0, 0);
+
+  S.hover = null;
+  tooltip.hidden = true;
+  closePeek();
+  S.paintMode = "both";        // under the flaps the canvas is always the split square...
+  S.paintScale = next;         // ...but on the ramp it is about to settle on
+  setGender(next);
+  S.folding = true;            // from here, anything else that redraws calls the fold off
+
+  const ox = MARGIN + S.tx, oy = MARGIN + S.ty, L = S.order.length * S.cell;
+  const from = FLAP_ANGLE[prev], to = FLAP_ANGLE[next];
+  host.hidden = false;
+  // Vanishing-point at the middle of the square, so the lift reads the same in both halves.
+  host.style.perspectiveOrigin = `${ox + L / 2}px ${oy + L / 2}px`;
+
+  const moving = [];
+  for (const half of ["lower", "upper"]) {
+    if (from[half] === 90 && to[half] === 90) continue;     // edge-on at both ends
+    const el = renderFlap(half === "lower" ? "men" : "women", next);
+    el.className = `flap ${half}`;
+    el.style.transformOrigin = `${ox}px ${oy}px`;
+    el.style.clipPath = flapClip(half, ox, oy, L);
+    el.style.transform = `rotate3d(1,1,0,${from[half]}deg)`;
+    host.appendChild(el);
+    moving.push([el, to[half]]);
+  }
+
+  /* The two datasets rank the teams differently, so the rows come back a few places from
+     where they were — a mean of four, in the default order. Holding the frame we left over
+     the first moments of the fold, while the easing still has the flaps nearly flat, turns
+     that reshuffle into a settle instead of a jump. */
+  leaving.className = "leaving";
+  host.appendChild(leaving);
+
+  const total = moving.length === 2 ? FOLD_DOUBLE_MS : FOLD_MS;
+  const span = moving.length === 2 ? Math.round(FOLD_DOUBLE_MS * .58) : FOLD_MS;
+  requestAnimationFrame(() => {
+    leaving.style.transition = `opacity ${Math.round(span * .26)}ms linear`;
+    leaving.style.opacity = "0";
+    for (const [el, angle] of moving) {
+      // In a two-flap switch the one lying down waits for the one standing up.
+      const wait = angle === 0 ? total - span : 0;
+      el.style.transition = `transform ${span}ms ${FOLD_EASE} ${wait}ms`;
+      el.style.transform = `rotate3d(1,1,0,${angle}deg)`;
+    }
+  });
+  _foldTimer = setTimeout(endFold, total + 40);
 }
 
 /* ---------- interaction ---------- */
@@ -867,32 +1074,23 @@ function cellAt(mx, my) {
   return { r, c };
 }
 
-// One description of a pairing, reused by the tooltip, the peek card and the screen reader.
-function pairSummary(aId, bId) {
-  const A = S.byId.get(aId), B = S.byId.get(bId);
-  if (!A || !B) return { title: "", lines: [] };
-  if (A.id === B.id) {
-    return { title: A.name, lines: [`${A.confed}${A.defunct ? " · defunct" : ""}`], self: true };
-  }
+// Which archive a grid cell belongs to: its half of the split square, else the dataset.
+const cellGender = rc => (isCombined() ? halfGender(rc.r, rc.c) || "men" : S.gender);
+const archiveWord = g => (g === "men" ? "Men's" : "Women's");
+
+/* What one cell's colour is saying, in words, for one archive. */
+function archiveSummary(A, B, gender) {
   const asOf = present() ? "" : ` by ${S.year}`;
-  const title = `${A.name} v ${B.name}`;
-  if (isCombined()) {
-    const mc = countAsOf(A.id, B.id, "men"), wc = countAsOf(A.id, B.id, "women");
-    const say = (label, c) => `${label}: ${c ? `${c} ${pl(c, "meeting")}${asOf}` : `never played${asOf}`}`;
-    return { title, lines: [say("Men's", mc), say("Women's", wc)] };
-  }
-  const met = metAsOf(A.id, B.id);
-  const p = lookup(A.id, B.id);
-  if (met) {
-    const cnt = countAsOf(A.id, B.id);
+  if (metAsOf(A.id, B.id, gender)) {
+    const cnt = countAsOf(A.id, B.id, gender);
+    const p = lookup(A.id, B.id, gender);
     const approx = countsExact() ? "" : "~";
-    const range = present() ? `${p[1]}–${p[2]}` : `since ${p[1]}`;
-    return { title, lines: [`${approx}${cnt} ${pl(cnt, "meeting")}${asOf}`, range] };
+    return { lines: [`${approx}${cnt} ${pl(cnt, "meeting")}${asOf}`,
+                     present() ? `${p[1]}–${p[2]}` : `since ${p[1]}`] };
   }
-  const up = upcomingInfo(A.id, B.id);
+  const up = upcomingInfo(A.id, B.id, gender);
   if (up && present()) {
     return {
-      title,
       lines: [up[0] >= S.today ? "first meeting coming up" : "first meeting — result pending",
               `${up[0]} · ${up[1]}`],
       upcoming: true,
@@ -900,23 +1098,48 @@ function pairSummary(aId, bId) {
   }
   // Distinguish the three empties in words as well as in colour.
   for (const t of [A, B]) {
-    if (!hasAnyMatches(t.id)) {
-      return { title, lines: [`${t.name} has never played a ${genderWord()} international`],
+    if (!hasAnyMatches(t.id, gender)) {
+      return { lines: [`${t.name} has never played a ${genderWord(gender)} international`],
                silent: true };
     }
   }
   if (!present()) {
     for (const t of [A, B]) {
-      const y = debutYear(t.id);
+      const y = debutYear(t.id, gender);
       if (y != null && y > S.year) {
-        return { title, lines: [`${t.name} had not debuted by ${S.year}`, `first match ${y}`],
+        return { lines: [`${t.name} had not debuted by ${S.year}`, `first match ${y}`],
                  predebut: true };
       }
     }
   }
-  return { title, lines: [`never played${asOf}`, `${genderWord()} internationals`] };
+  return { lines: [`never played${asOf}`, `${genderWord(gender)} internationals`] };
 }
-const genderWord = () => (isCombined() ? "senior" : S.gender === "men" ? "men's" : "women's");
+
+/* One description of a pairing, reused by the tooltip, the peek card and the screen reader.
+
+   In the split square a cell belongs to one game, so the caller passes the half the
+   pointer landed on: that archive leads, and the cell's own mirror across the diagonal —
+   the same pairing in the other game — is the second line. */
+function pairSummary(aId, bId, gender = S.gender) {
+  const A = S.byId.get(aId), B = S.byId.get(bId);
+  if (!A || !B) return { title: "", lines: [] };
+  if (A.id === B.id) {
+    return { title: A.name, lines: [`${A.confed}${A.defunct ? " · defunct" : ""}`], self: true };
+  }
+  const title = `${A.name} v ${B.name}`;
+  if (gender === "both") {                     // no half in hand: report the two archives
+    const say = g => `${archiveWord(g)}: ${archiveSummary(A, B, g).lines[0]}`;
+    return { title, lines: [say("men"), say("women")] };
+  }
+  const sum = archiveSummary(A, B, gender);
+  if (!isCombined()) return { ...sum, title };
+  const other = gender === "men" ? "women" : "men";
+  return { ...sum, title,
+           lines: [`${archiveWord(gender)}: ${sum.lines[0]}`,
+                   `${archiveWord(other)}: ${archiveSummary(A, B, other).lines[0]}`] };
+}
+const genderWord = (gender = S.gender) =>
+  (gender === "both" ? "senior" : gender === "men" ? "men's" : "women's");
 
 /* Which archive(s) a view is actually reading.
 
@@ -939,7 +1162,7 @@ function summaryHtml(sum) {
 }
 
 function showTooltip(rc, mx, my) {
-  tooltip.innerHTML = summaryHtml(pairSummary(S.order[rc.r], S.order[rc.c]));
+  tooltip.innerHTML = summaryHtml(pairSummary(S.order[rc.r], S.order[rc.c], cellGender(rc)));
   tooltip.hidden = false;
   const pad = 14;
   let x = mx + pad, y = my + pad;
@@ -962,7 +1185,7 @@ function showPeek(rc, px, py) {
   const el = $("peek");
   if (!el) return;
   const aId = S.order[rc.r], bId = S.order[rc.c];
-  const sum = pairSummary(aId, bId);
+  const sum = pairSummary(aId, bId, cellGender(rc));
   el.innerHTML = summaryHtml(sum)
     + `<div class="peek-act">`
     + (sum.self ? "" : `<button type="button" class="peek-open">See all meetings</button>`)
@@ -983,6 +1206,7 @@ function showPeek(rc, px, py) {
 }
 
 function zoomAt(px, py, newCell) {  // px,py = canvas-relative coords of the fixed point
+  if (S.folding) endFold();          // the flaps are pinned to the geometry they left on
   newCell = Math.max(MIN_CELL, Math.min(80, newCell));
   const before = MARGIN;
   const k = newCell / S.cell;
@@ -1052,6 +1276,7 @@ function setupInteraction() {
       const cx = (a.x + b.x) / 2 - r.left, cy = (a.y + b.y) / 2 - r.top;
       zoomAt(cx, cy, pinchCell * (dist(a, b) / pinchDist));
     } else if (mode === "pan") {
+      if (S.folding) endFold();
       S.tx += e.clientX - prev.x; S.ty += e.clientY - prev.y;
       if (Math.hypot(e.clientX - downX, e.clientY - downY) >= 5) { moved = true; cancelLong(); }
       clampPan(); S.hover = null; tooltip.hidden = true; draw();
@@ -1163,7 +1388,7 @@ function scrollFocusIntoView() {
 }
 function announceFocus() {
   if (!S.focus) return;
-  const sum = pairSummary(S.order[S.focus.r], S.order[S.focus.c]);
+  const sum = pairSummary(S.order[S.focus.r], S.order[S.focus.c], cellGender(S.focus));
   announce(`${sum.title}. ${sum.lines.join(". ")}`);
 }
 
@@ -1803,13 +2028,13 @@ function headlineCombined(headline) {
   const neither = c.total - c.both - menOnly - womenOnly;
   const filter = (S.manual.size || S.showConfeds.size < S.confedOrder.length) ? " in this view" : "";
   const scope = present() ? filter : `${filter} as of ${S.year}`;
+  // Lead with the gap between the halves: it is what the split square is for.
   headline.innerHTML =
-    `<span class="big">${num(c.both)}</span>`
-    + `<span class="rest">${pl(c.both, "pairing")} ${c.both === 1 ? "has" : "have"} met in `
-    + `<b>both</b> the men's and women's game${esc(scope)} — `
-    + `<b style="color:var(--men-only)">${num(menOnly)}</b> men's-only, `
-    + `<b style="color:var(--women-only)">${num(womenOnly)}</b> women's-only, `
-    + `${num(neither)} in neither, of ${num(c.total)} possible.</span>`;
+    `<span class="big">${num(c.men)}</span>`
+    + `<span class="rest"><b>men's</b> ${pl(c.men, "fixture")} above the diagonal, `
+    + `<b>${num(c.women)}</b> <b>women's</b> below it${esc(scope)} — ${num(c.both)} `
+    + `${pl(c.both, "pairing")} played in both games, ${num(menOnly)} in the men's alone, `
+    + `${num(womenOnly)} in the women's, ${num(neither)} in neither.</span>`;
 }
 
 function headlineFixtures(headline) {
@@ -2140,11 +2365,9 @@ function setGender(gender) {
     b.setAttribute("aria-selected", on ? "true" : "false");
     b.tabIndex = on ? 0 : -1;
   });
-  // The never/upcoming highlights are single-dataset concepts; combined has its own key.
-  for (const id of ["opt-highlight", "opt-upcoming"]) {
-    const el = $(id);
-    if (el) el.disabled = isCombined();
-  }
+  /* The never/upcoming highlights used to be greyed out in combined view: they are
+     single-dataset ideas and the overlay had no single dataset to apply them to. Each half
+     of the split square has one, so they mean something again in all three. */
   buildTeamList();           // refresh the rank shown per gender
   updateUpcomingCount();
   updateLegend();
@@ -2153,7 +2376,7 @@ function setGender(gender) {
 }
 
 function buildControls() {
-  wireTabs($("gender"), btn => setGender(btn.dataset.gender));
+  wireTabs($("gender"), btn => foldGender(btn.dataset.gender));
   wireTabs($("views"), btn => applyView(btn.dataset.view));
   setGender(S.gender);
 
@@ -2327,8 +2550,9 @@ function buildTeamList() {
 function updateUpcomingCount() {
   const el = $("upcoming-count");
   if (!el) return;
-  if (isCombined()) { el.textContent = ""; return; }
-  const n = [...S.upcoming[S.gender].values()].filter(([d]) => d >= S.today).length;
+  // Both halves of the split square can carry a highlight, so count across both archives.
+  const n = activeArchives().reduce((t, g) =>
+    t + [...S.upcoming[g].values()].filter(([d]) => d >= S.today).length, 0);
   el.textContent = n ? `${n}` : "";
   const pip = $("views-fixtures-pip");
   if (pip) {

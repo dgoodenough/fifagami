@@ -122,13 +122,19 @@
           <span><i class="sw" id="sw-diag"></i> same team</span>
         </div>
       </div>
-      <div id="legend-combined" hidden>
-        <div class="row"><span class="lbl">Have played each other in…</span></div>
-        <div class="legend-keys legend-combined-keys">
-          <span><i class="sw" id="sw-both"></i> both</span>
-          <span><i class="sw" id="sw-men"></i> men's only</span>
-          <span><i class="sw" id="sw-women"></i> women's only</span>
-          <span><i class="sw" id="sw-neither"></i> neither</span>
+      <div id="legend-split" hidden>
+        <div class="row"><span class="lbl">The split square</span></div>
+        <div class="split-key">
+          <svg viewBox="0 0 44 44" width="44" height="44" aria-hidden="true">
+            <rect x="0" y="0" width="44" height="44" class="sk-sheet" />
+            <line x1="0" y1="0" x2="44" y2="44" class="sk-fold" />
+            <text x="31" y="17" class="sk-lbl">M</text>
+            <text x="13" y="36" class="sk-lbl">W</text>
+          </svg>
+          <p class="hint">Every pairing appears twice in a symmetric grid, so half of it was
+            only ever a mirror. <b>Above</b> the diagonal is the men's game, <b>below</b> it
+            the women's — the same two teams, the other archive. Both halves are drawn on
+            the one scale above, so the paler half is really the emptier one.</p>
         </div>
       </div>
     </section>
@@ -196,6 +202,9 @@
           <button type="button" id="zoom-fit" title="Fit grid to view">Fit</button>
           <button type="button" id="zoom-in" aria-label="Zoom in" title="Zoom in">+</button>
         </div>
+        <!-- The flaps of the fold: canvases of the grid in a dataset other than the one
+             on screen, hinged on the square's diagonal. Empty except mid-fold. -->
+        <div id="fold" hidden aria-hidden="true"></div>
         <div id="teamfocus" hidden></div>
         <div id="tooltip" hidden aria-hidden="true"></div>
         <div id="peek" hidden></div>

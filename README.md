@@ -24,7 +24,8 @@ meetings. Turn off *Never-played* and the grid colours by meetings instead, a gr
 a single match up to Argentina against Uruguay, the most-played fixture in the game,
 first contested in 1902.
 
-The diagonal is blacked out. A team cannot play itself.
+The diagonal is blacked out. A team cannot play itself. On *Both* it is also the fold: the
+same two teams appear once above it in the men's game and once below it in the women's.
 
 ## Five views
 
@@ -43,9 +44,17 @@ toggle and the timeline scrubber narrow all five. Filter to CONMEBOL, scrub to 1
 ## What it does
 
 - **Zoom and pan** the full grid, on a mouse or a phone. Tap a cell to aim, tap again to open it.
-- **Men's, women's, or both.** Two separate archives with their own FIFA rankings. *Both*
-  overlays them: met in both games, men's only, women's only, neither. Roughly 4,000 pairings
-  have been played by men and not women; a few hundred the other way.
+- **Men's, women's, or both — in one square.** Two separate archives with their own FIFA
+  rankings. Every pairing appears twice in a symmetric matrix, so half the grid was only ever
+  a mirror of the other half; *Both* spends that half on the second game instead. Above the
+  diagonal is the men's record, below it the women's, on one shared scale — so the paler half
+  is genuinely the emptier one. 4,023 pairings have been played by men and not women; 325 the
+  other way.
+- **Switching datasets is a fold.** Each game on its own is the same split square with the
+  mirrored half folded back down over the other archive, so the toggle hinges it on the
+  diagonal: up and out of the way for *Both*, down again for either game alone. Men's
+  straight to women's takes both flaps in turn and passes through the split on the way.
+  Honoured `prefers-reduced-motion` skips it.
 - **Click any cell** for every meeting between those two teams, with scores, tournaments and
   the head-to-head record.
 - **Timeline scrubber.** Drag through the years and watch the grid fill in. Press ▶ and it
@@ -155,6 +164,11 @@ never met first appears on the calendar. Every item links back to that pairing i
 A static site. Vanilla JavaScript and a canvas, no build step, no runtime dependencies, hosted
 on GitHub Pages from `docs/`. The 44,000-cell grid is drawn with view-culling for smooth
 zoom and pan, and Pointer Events give mouse and touch a single interaction path.
+
+The fold is three canvases: the split square on the live canvas, and one offscreen render of
+the grid per archive, each clipped to a triangle and hinged on the square's diagonal by a CSS
+`rotate3d(1, 1, 0)` about its top-left corner. A flap only ever travels to edge-on, so no
+frame of the animation is spent on a half the viewer cannot see.
 
 Two things keep it quick at 22,155 pairings. The never-played count is a prefix sum over each
 pair's first-meeting year, so a timeline drag reads it in constant time per frame instead of
