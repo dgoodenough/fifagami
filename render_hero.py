@@ -116,10 +116,9 @@ def load_sheet():
     return members, counts, played, max_count
 
 
-def watermark_ink() -> tuple[int, int, int]:
-    """The half-labels, matching the canvas: --ink at 62% over the page ground."""
-    c0, c1 = hexrgb(CHROME), hexrgb(VARS["--ink"])
-    return tuple(round(a + (b - a) * 0.62) for a, b in zip(c0, c1))
+def crease_ink() -> tuple[int, int, int]:
+    """The half-labels. A caption, not a headline — the panel's own label colour."""
+    return hexrgb(VARS["--ink-2"])
 
 
 def played_grey(t: float) -> tuple[int, int, int]:
@@ -169,14 +168,14 @@ def draw_grid(d: ImageDraw.ImageDraw, members, counts, max_count, ox: int, oy: i
     d.line([(ox, oy), (ox + size, oy + size)],
            fill=GRID_STRONG, width=max(1, min(3, round(cell * 0.3))))
     if label:
-        pt = max(12, min(58, size // 15))
+        pt = max(10, min(20, size // 40))
         font = load_font(pt)
-        for text, fx, fy in (("MEN'S", 0.70, 0.28), ("WOMEN'S", 0.30, 0.72)):
+        for text, fx, fy in (("MEN'S", 0.74, 0.24), ("WOMEN'S", 0.26, 0.76)):
             box = d.textbbox((0, 0), text, font=font)
             d.text((ox + size * fx - (box[2] - box[0]) / 2 - box[0],
                     oy + size * fy - (box[3] - box[1]) / 2 - box[1]),
-                   text, font=font, fill=watermark_ink(),
-                   stroke_width=max(2, pt // 8), stroke_fill=hexrgb(CHROME))
+                   text, font=font, fill=crease_ink(),
+                   stroke_width=max(1, pt // 7), stroke_fill=hexrgb(CHROME))
 
     if band:                                        # confederation strips (top + left)
         font = load_font(max(9, band - 3))

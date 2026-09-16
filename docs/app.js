@@ -37,6 +37,7 @@ const S = {
   view: "grid",
   folded: false,                     // the square folded in half along its diagonal
   sort: "confed",                    // "confed" | "rank" | "matches" | "alpha"
+  rankBy: "best",                    // "best" | "men" | "women" | "avg" — see rankOf()
   showConfeds: new Set(),
   manual: new Set(),
   includeDefunct: false,
@@ -409,11 +410,27 @@ function ensureYearsForView() {
 }
 
 /* ---------- ordering ---------- */
-// One sheet, one order: a team sits at its better (lower) rank of the two tables.
+/* One sheet, two ranking tables, so which one orders it is a question the sheet cannot
+   answer for you. The default is the better of a team's two ranks, which flatters nobody
+   and keeps every team placed. Picking one table sorts the teams it does not rank last,
+   and so does the average, which is an average only when there are two numbers to take
+   it of — about fourteen members have never been given a women's ranking. */
+const RANK_BY = ["best", "men", "women", "avg"];
 function rankOf(m) {
-  return Math.min(m.mens_rank == null ? Infinity : m.mens_rank,
-                  m.womens_rank == null ? Infinity : m.womens_rank);
+  const men = m.mens_rank == null ? Infinity : m.mens_rank;
+  const women = m.womens_rank == null ? Infinity : m.womens_rank;
+  switch (S.rankBy) {
+    case "men": return men;
+    case "women": return women;
+    case "avg": return (men + women) / 2;        // Infinity if either is missing
+    default: return Math.min(men, women);
+  }
 }
+// What the rank shown next to a team, and the order it sits in, is measured against.
+const rankLabel = () => (S.rankBy === "men" ? "men's FIFA rank"
+  : S.rankBy === "women" ? "women's FIFA rank"
+    : S.rankBy === "avg" ? "the average of the two ranks"
+      : "the better of the two ranks");
 
 // Which datasets a pair has met in, as of the scrubber year. Bitmask 1 = men, 2 = women,
 // so 3 = both, 0 = neither. The split square says this with geometry; the single-team card,
@@ -839,17 +856,20 @@ function drawCrease(n, ox, oy, cell) {
   ctx.lineTo(ox + L, oy + L);
   ctx.stroke();
 
+  /* The two halves need naming, but a caption is not a headline: at the panel's own label
+     size and colour they read as an annotation of the crease rather than a word stamped
+     across the data. Haloed in the page ground, because they cross both the red field and
+     the grey one. */
   if (L >= 190) {
-    const size = Math.max(12, Math.min(58, L / 15));
+    const size = Math.max(10, Math.min(20, L / 40));
     ctx.font = `700 ${size}px ui-sans-serif, system-ui, -apple-system, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.lineJoin = "round";
-    ctx.lineWidth = Math.max(3, size / 4);
+    ctx.lineWidth = Math.max(2, size / 4);       // a thin halo, not a badge
     ctx.strokeStyle = getCss("--bg");
-    ctx.fillStyle = getCss("--ink");
-    ctx.globalAlpha = .62;
-    for (const [text, fx, fy] of [["MEN'S", .7, .28], ["WOMEN'S", .3, .72]]) {
+    ctx.fillStyle = getCss("--ink-2");
+    for (const [text, fx, fy] of [["MEN'S", .74, .24], ["WOMEN'S", .26, .76]]) {
       const x = ox + L * fx, y = oy + L * fy;
       ctx.strokeText(text, x, y);
       ctx.fillText(text, x, y);
@@ -2180,6 +2200,7 @@ function writeUrl() {
     if (S.view !== "grid") p.set("view", S.view);
     if (S.folded) p.set("fold", "1");
     if (S.sort !== "confed") p.set("sort", S.sort);
+    if (S.rankBy !== "best") p.set("rank", S.rankBy);
     if (S.showConfeds.size < S.confedOrder.length) {
       p.set("confed", [...S.showConfeds].join(",") || "none");
     }
@@ -2206,6 +2227,7 @@ function readUrl() {
   S.folded = p.get("fold") === "1" || p.get("g") === "both";
   const sort = p.get("sort");
   if (["confed", "rank", "matches", "alpha"].includes(sort)) S.sort = sort;
+  if (RANK_BY.includes(p.get("rank"))) S.rankBy = p.get("rank");
   if (p.has("confed")) {
     const raw = p.get("confed");
     S.showConfeds = new Set(raw === "none" ? []
@@ -2377,7 +2399,22 @@ function buildControls() {
 
   const sortSel = $("sort");
   sortSel.value = S.sort;
-  sortSel.addEventListener("change", e => { S.sort = e.target.value; recompute(true); });
+  sortSel.addEventListener("change", e => {
+    S.sort = e.target.value;
+    syncRankBy();
+    recompute(true);
+  });
+
+  const rankSel = $("rank-by");
+  if (rankSel) {
+    rankSel.value = S.rankBy;
+    rankSel.addEventListener("change", e => {
+      S.rankBy = e.target.value;
+      buildTeamList();                           // the rank printed per team moves with it
+      recompute(true);
+    });
+  }
+  syncRankBy();
 
   // confederation checkboxes
   const counts = {};
@@ -2511,6 +2548,18 @@ function buildControls() {
   });
 }
 
+/* The rank basis only bites on the two orders that read a ranking table. Enabled and
+   inert over "total matches" or "alphabetical", it would read as a broken control. */
+function syncRankBy() {
+  const el = $("rank-by");
+  if (!el) return;
+  const bites = S.sort === "confed" || S.sort === "rank";
+  el.disabled = !bites;
+  el.title = bites ? "" : "This sort does not read a ranking table";
+  const row = $("rank-by-row");
+  if (row) row.classList.toggle("dim", !bites);
+}
+
 function toggleConfeds(on) {
   S.showConfeds = on ? new Set(S.confedOrder) : new Set();
   document.querySelectorAll("#confed-list input").forEach(i => { i.checked = on; });
@@ -2528,9 +2577,13 @@ function buildTeamList() {
     if (q && !m.name.toLowerCase().includes(q)) continue;
     const lab = document.createElement("label");
     const r = rankOf(m);
-    const rk = (r && r !== Infinity) ? `#${r}` : (m.defunct ? "defunct" : "unranked");
+    // An averaged rank lands between the two tables, so it is not always a whole number.
+    const rk = (r && r !== Infinity)
+      ? `#${Number.isInteger(r) ? r : r.toFixed(1)}`
+      : (m.defunct ? "defunct" : "unranked");
     lab.innerHTML = `<input type="checkbox" data-id="${m.id}" ${S.manual.has(m.id) ? "checked" : ""}>
-      ${esc(teamLabel(m))} <span class="rk">${esc(m.confed)} ${esc(rk)}</span>`;
+      ${esc(teamLabel(m))} <span class="rk" title="${esc(rankLabel())}">`
+      + `${esc(m.confed)} ${esc(rk)}</span>`;
     list.appendChild(lab);
   }
   list.onchange = e => {
