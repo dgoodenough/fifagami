@@ -365,6 +365,8 @@ function isUpcoming(a, b, gender = "both") {
   const u = upcomingInfo(a, b, gender);
   return !!u && u[0] >= S.today;
 }
+// Folded, a cell is both archives at once, so a date in either one is a date for the cell.
+const isUpcomingEither = (a, b) => isUpcoming(a, b, "men") || isUpcoming(a, b, "women");
 
 // Has this team played anyone at all in the active archive? An entire empty row is a
 // different fact from "these two have never met", and the site says so.
@@ -718,9 +720,12 @@ function draw() {
       } else if (ink === "combined") {
         const sil = silent.both, pre = predebut.both;
         col = metCategory(a, b) ? combinedColor(a, b)
-          : (sil[r] || sil[c]) ? nodataCol
-            : (pre[r] || pre[c]) ? predebutCol
-              : neverCol;
+          // Never met in either game, and a date on the calendar to change that: the same
+          // rule the unfolded halves use, asked of the pairing rather than one archive.
+          : (S.showUpcoming && atPresent && isUpcomingEither(a, b)) ? upcomingCol
+            : (sil[r] || sil[c]) ? nodataCol
+              : (pre[r] || pre[c]) ? predebutCol
+                : neverCol;
       } else {
         const g = inkGender(ink, r, c);
         const sil = silent[g], pre = predebut[g];
@@ -1180,15 +1185,25 @@ function pairSummary(aId, bId, gender = "both") {
     return { title: A.name, lines: [`${A.confed}${A.defunct ? " · defunct" : ""}`], self: true };
   }
   const title = `${A.name} v ${B.name}`;
-  if (gender === "both") {                     // no half in hand: report the two archives
-    const say = g => `${archiveWord(g)}: ${archiveSummary(A, B, g).lines[0]}`;
-    return { title, lines: [say("men"), say("women")] };
+  if (gender === "both") {                     // the folded sheet: one cell, both archives
+    const lines = [`${archiveWord("men")}: ${archiveSummary(A, B, "men").lines[0]}`,
+                   `${archiveWord("women")}: ${archiveSummary(A, B, "women").lines[0]}`];
+    // When and where, which is the one thing neither of those lines has room for.
+    for (const g of ["men", "women"]) {
+      const up = upcomingInfo(A.id, B.id, g);
+      if (up && present()) lines.push(`${up[0]} · ${up[1]}`);
+    }
+    return { title, lines };
   }
+  /* The cell's own archive leads and keeps its detail — the years a pair has met between,
+     or the date a first meeting is booked for. Losing that second line to the mirror is
+     how a highlighted fixture stopped being able to say when. The mirror follows it. */
   const sum = archiveSummary(A, B, gender);
   const other = gender === "men" ? "women" : "men";
-  return { ...sum, title,
-           lines: [`${archiveWord(gender)}: ${sum.lines[0]}`,
-                   `${archiveWord(other)}: ${archiveSummary(A, B, other).lines[0]}`] };
+  const lines = [`${archiveWord(gender)}: ${sum.lines[0]}`];
+  if (sum.lines[1]) lines.push(sum.lines[1]);
+  lines.push(`${archiveWord(other)}: ${archiveSummary(A, B, other).lines[0]}`);
+  return { ...sum, title, lines };
 }
 const genderWord = (gender = "both") =>
   (gender === "both" ? "senior" : gender === "men" ? "men's" : "women's");
@@ -1207,7 +1222,7 @@ function summaryHtml(sum) {
   const cls = sum.upcoming ? "up" : sum.silent ? "silent" : sum.predebut ? "pre" : "n";
   return `<div class="vs">${esc(sum.title)}</div>`
     + `<div class="${cls}">${esc(sum.lines[0] || "")}</div>`
-    + (sum.lines[1] ? `<div class="dim">${esc(sum.lines[1])}</div>` : "");
+    + sum.lines.slice(1).map(l => `<div class="dim">${esc(l)}</div>`).join("");
 }
 
 function showTooltip(rc, mx, my) {
@@ -1758,7 +1773,7 @@ function renderFixtures() {
        <h2>Never met. Scheduled to.</h2>
        <p>Every pairing below would be a first meeting in the history of the game — two
           national teams that have never played each other, with a date. This feed covers
-          <b>both</b> games, whichever dataset the grid is set to${esc(isFiltered() ? ", filtered to the teams in the panel" : "")}.
+          <b>both</b> games${esc(isFiltered() ? ", filtered to the teams in the panel" : "")}.
           <a href="feed.xml">Subscribe by RSS</a> or <a href="feed.json">JSON</a>.</p>
      </div>`
     + groups.map(gr =>
@@ -2376,13 +2391,12 @@ function setFolded(folded) {
     b.setAttribute("aria-selected", on ? "true" : "false");
     b.tabIndex = on ? 0 : -1;
   });
-  /* Never-played and upcoming are single-archive ideas. Each half of the unfolded sheet
-     has one archive, so they mean something there; the folded sheet is the two read
-     together and answers with its own four-way key instead. */
-  for (const id of ["opt-highlight", "opt-upcoming"]) {
-    const el = $(id);
-    if (el) el.disabled = folded;
-  }
+  /* Never-played moves the meetings ramp, and the folded sheet has no ramp — it carries
+     the four-way key, whose colours are fixed. Upcoming is not like that: a pairing that
+     has never met in either game and has a date booked is exactly what the folded sheet is
+     for, so it stays live on both. */
+  const highlight = $("opt-highlight");
+  if (highlight) highlight.disabled = folded;
   // The keyboard focus may be sitting on the half that has just folded away; the same
   // pairing is waiting for it across the crease.
   if (folded && S.focus && S.focus.c < S.focus.r) S.focus = { r: S.focus.c, c: S.focus.r };

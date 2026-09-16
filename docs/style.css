@@ -224,6 +224,10 @@ body[data-never="1"] #sw-never { background: var(--never-hi); border-color: var(
 #sw-men { background: var(--men-only); }
 #sw-women { background: var(--women-only); }
 #sw-neither { background: var(--never); border: 1px solid var(--grid-strong); }
+/* The three empties the folded sheet can also paint, which its key never named. */
+#sw-up-folded { background: var(--upcoming); }
+#sw-pre-folded { background: var(--predebut); border: 1px solid var(--grid); }
+#sw-none-folded { background: var(--nodata); border: 1px solid var(--nodata-line); }
 .split-key { display: flex; gap: 10px; align-items: flex-start; }
 .split-key svg { flex: none; border: 1px solid var(--grid-strong); border-radius: 2px; }
 .split-key .hint { margin: 0; line-height: 1.5; }
