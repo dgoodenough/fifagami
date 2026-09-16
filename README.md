@@ -8,10 +8,11 @@ and fewer than one in six of the women's. Every pairing is one cell of this grid
 
 **▶ Live: https://dgoodenough.github.io/fifagami/**
 
-![Every possible international fixture, played in grey and unplayed in red](docs/assets/hero.png)
+![Every possible international fixture, split down the diagonal: the men's record above it, the women's below, played in grey and unplayed in red](docs/assets/hero.png)
 
 Every current FIFA member is a row and a column. Each cell is a pairing. Red means those two
-national teams have never played each other, in 150 years of trying.
+national teams have never played each other, in 150 years of trying. The grid is creased down
+its diagonal: the men's record above it, the women's below.
 
 ## How to read it
 
@@ -129,8 +130,9 @@ It writes the artifacts the site loads:
 - `feed.json`, `feed.xml` — upcoming first meetings, as a subscribable feed
 
 `python render_hero.py` draws the README image, the share card and the touch icon. It reads the
-palette out of `docs/style.css`, so the pictures cannot drift from the site. The share card
-quotes a live figure, so the daily refresh regenerates it.
+palette out of `docs/style.css` and re-sorts the members the way the app does, so the pictures
+cannot drift from the site. The share card quotes live figures, so the daily refresh
+regenerates it.
 
 Then serve it:
 
