@@ -62,7 +62,11 @@ which is the only view with a sheet to fold; the four lists read both archives e
 - **Tick one team** for its full record, ranked most- to least-played. Tick several to build a
   sub-grid.
 - **Upcoming first meetings** highlighted in yellow, from scheduled fixtures up to two years out.
-- **Sort** by confederation then rank, by global rank, by total matches played, or alphabetically.
+- **Sort** by confederation then rank, by global rank, by total matches played, or
+  alphabetically — and choose which table the rank comes from. One sheet has two FIFA
+  rankings on it, so *Rank by* reads the men's, the women's, the average of the two, or (the
+  default) whichever of a team's two ranks is better. Teams the chosen table does not rank
+  sort last.
 - **Include defunct teams**, for Yugoslavia, Czechoslovakia, East Germany, the Saar, South
   Vietnam and South Yemen.
 - **Three kinds of empty, told apart.** Never met, had not happened yet at the scrubbed year,
@@ -100,7 +104,9 @@ Martinique and Jersey, are excluded, and the build prints all of them.
 
 **Rankings are current and per-gender**, pulled at build time. The publication date is recorded
 in `members.json` and shown in the app footer. About 14 members have never been given a women's
-ranking and sort last within their confederation.
+ranking; under *Rank by* they sort last on the women's table and on the average, which is an
+average only where there are two numbers to take it of. The default — the better of a team's
+two ranks — always has one.
 
 **The archives have a cut-off.** martj42 updates within a day or two of most internationals.
 The current cut-off for each is in `members.json` as `data_through`, and in the app footer.

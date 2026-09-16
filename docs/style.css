@@ -171,10 +171,14 @@ button.mini:hover { color: var(--ink); border-color: var(--ink); }
 .team-list .rk { margin-left: auto; color: var(--ink-3); font-size: .68rem; font-variant-numeric: tabular-nums; }
 .team-list input { accent-color: var(--pos); }
 
-#sort, .path-pick select {
+#sort, #rank-by, .path-pick select {
   width: 100%; padding: 7px 9px; background: var(--paper); border: 1px solid var(--grid-strong);
   color: var(--ink); border-radius: var(--radius); font-size: .85rem; cursor: pointer; font-family: inherit;
 }
+#rank-by-row { margin-top: 10px; }
+/* Greyed out under a sort that reads no ranking table, label and all. */
+#rank-by:disabled { opacity: .45; cursor: default; }
+#rank-by-row.dim .lbl { opacity: .45; }
 
 /* timeline */
 #timeline-toggle { display: none; }          /* phone-only; see the mobile block below */
