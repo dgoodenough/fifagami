@@ -44,15 +44,15 @@
     </header></div>
 
     <div id="panel-body">
-    <section class="ctl">
-      <h2 class="sr-only">Dataset</h2>
-      <div class="seg" id="gender" role="tablist" aria-label="Dataset">
-        <button type="button" role="tab" id="tab-men" data-gender="men" class="active" aria-selected="true" tabindex="0">Men's</button>
-        <button type="button" role="tab" id="tab-women" data-gender="women" aria-selected="false" tabindex="-1">Women's</button>
-        <button type="button" role="tab" id="tab-both" data-gender="both" aria-selected="false" tabindex="-1">Both</button>
+    <section class="ctl" id="fold-ctl">
+      <h2 class="sr-only">Fold</h2>
+      <div class="seg" id="fold-tabs" role="tablist" aria-label="Fold">
+        <button type="button" role="tab" id="tab-open" data-fold="open" class="active" aria-selected="true" tabindex="0">Unfolded</button>
+        <button type="button" role="tab" id="tab-shut" data-fold="shut" aria-selected="false" tabindex="-1">Folded</button>
       </div>
-      <p class="hint" id="gender-note" hidden>The fixtures feed covers both games — switch to
-        another view to pick one.</p>
+      <p class="hint" id="fold-note">Unfolded, the men's game is above the diagonal and the
+        women's below. Fold it in half and the two land on each other — one triangle, every
+        pairing answered by both games at once.</p>
     </section>
 
     <section class="ctl">
@@ -123,7 +123,7 @@
         </div>
       </div>
       <div id="legend-split" hidden>
-        <div class="row"><span class="lbl">The split square</span></div>
+        <div class="row"><span class="lbl">The unfolded sheet</span></div>
         <div class="split-key">
           <svg viewBox="0 0 44 44" width="44" height="44" aria-hidden="true">
             <rect x="0" y="0" width="44" height="44" class="sk-sheet" />
@@ -136,6 +136,17 @@
             the women's — the same two teams, the other archive. Both halves are drawn on
             the one scale above, so the paler half is really the emptier one.</p>
         </div>
+      </div>
+      <div id="legend-folded" hidden>
+        <div class="row"><span class="lbl">Have played each other in…</span></div>
+        <div class="legend-keys legend-folded-keys">
+          <span><i class="sw" id="sw-both"></i> both</span>
+          <span><i class="sw" id="sw-men"></i> men's only</span>
+          <span><i class="sw" id="sw-women"></i> women's only</span>
+          <span><i class="sw" id="sw-neither"></i> neither</span>
+        </div>
+        <p class="hint">The two halves laid on top of each other: each cell is one pairing,
+          answered by both archives at once.</p>
       </div>
     </section>
 
@@ -202,9 +213,9 @@
           <button type="button" id="zoom-fit" title="Fit grid to view">Fit</button>
           <button type="button" id="zoom-in" aria-label="Zoom in" title="Zoom in">+</button>
         </div>
-        <!-- The flaps of the fold: canvases of the grid in a dataset other than the one
-             on screen, hinged on the square's diagonal. Empty except mid-fold. -->
-        <div id="fold" hidden aria-hidden="true"></div>
+        <!-- The sheets of the fold: canvases of the grid in a state other than the one on
+             screen, hinged on the square's diagonal. Empty except mid-fold. -->
+        <div id="fold-stage" hidden aria-hidden="true"></div>
         <div id="teamfocus" hidden></div>
         <div id="tooltip" hidden aria-hidden="true"></div>
         <div id="peek" hidden></div>
