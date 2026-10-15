@@ -193,6 +193,25 @@ class TestUpcoming(unittest.TestCase):
             self.assertEqual(dates, sorted(dates))
 
 
+class TestEspnQueryShape(unittest.TestCase):
+    """ESPN stopped accepting date ranges around 2026-09-16 and the fixture feed was empty
+    for a month before anyone noticed. These are the two properties of the request that the
+    feed depends on, written down so a tidy-up cannot quietly undo them."""
+
+    def test_dates_is_a_bare_year(self):
+        url = build.espn_scoreboard_url("fifa.friendly", 2026)
+        self.assertIn("dates=2026", url)
+        self.assertNotIn("dates=2026-", url, "a date range answers 400 Bad Request")
+        self.assertRegex(url, r"[?&]dates=\d{4}(&|$)")
+
+    def test_an_explicit_limit_is_asked_for(self):
+        """Without one the response stops at 100 events, which in a busy competition is
+        some time in March — a silent truncation rather than an error."""
+        url = build.espn_scoreboard_url("fifa.friendly", 2026)
+        self.assertRegex(url, r"[?&]limit=\d+")
+        self.assertGreaterEqual(build.ESPN_PAGE_LIMIT, 500)
+
+
 class TestFixtureSourceCheck(unittest.TestCase):
     """The refresh commits whatever the build produced, and an empty fixture list is a
     perfectly valid artifact — which is how the feature shipped blank for a month without

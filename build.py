@@ -130,10 +130,16 @@ ESPN_SLUGS_WOMEN = [
     "uefa.weuro", "uefa.w.nations", "concacaf.womens.championship", "concacaf.w.gold",
     "conmebol.america.femenina", "caf.w.nations", "afc.w.asian.cup", "global.w.finalissima",
 ]
-# How far ahead to look. ESPN caps the window per request, so we fetch in ~120-day chunks;
-# 2 years is plenty to catch far-out tournaments without hammering the API.
+# How far ahead to look, and how to ask for it.
+#
+# This used to page through ~120-day `dates=YYYYMMDD-YYYYMMDD` windows. ESPN stopped
+# accepting date ranges some time around 2026-09-16 — every width now answers 400 Bad
+# Request, including a range of a single day — which emptied the fixture feed for a month.
+# A bare `dates=YYYY` still answers, and with an explicit limit it returns the whole
+# competition-year instead of the first hundred events. So the horizon is counted in
+# calendar years now, and a year arrives in one request instead of seven.
 ESPN_HORIZON_DAYS = 730
-ESPN_CHUNK_DAYS = 120
+ESPN_PAGE_LIMIT = 1000
 
 # ESPN displayName -> canonical member name (only the ones that differ).
 ESPN_ALIASES = {
@@ -257,6 +263,16 @@ def latest_match_date(results_file: str) -> str:
 
 
 # --- ESPN upcoming fixtures ---------------------------------------------------
+def espn_scoreboard_url(slug: str, year: int) -> str:
+    """One competition-year of ESPN's scoreboard.
+
+    The two things that matter are both easy to undo by accident: `dates` takes a bare year
+    and nothing else (a range of any width answers 400), and without an explicit limit the
+    response stops at the first hundred events, which in a busy competition is March."""
+    return (f"https://site.api.espn.com/apis/site/v2/sports/soccer/{slug}"
+            f"/scoreboard?dates={year}&limit={ESPN_PAGE_LIMIT}")
+
+
 def fetch_espn_fixtures(gender: str) -> tuple[dict[tuple[str, str], tuple[str, str]], dict]:
     """Scheduled internationals from ESPN's public scoreboard, {(nameA, nameB): (date, comp)}.
     Names are ESPN displayNames run through ESPN_ALIASES (not yet validated against members).
@@ -273,21 +289,18 @@ def fetch_espn_fixtures(gender: str) -> tuple[dict[tuple[str, str], tuple[str, s
     # all-requests-failed guard below will surface it instead of silently emptying the list.
     ua = "curl/8.4.0"
     today = date.today()
-    chunks = []
-    start = today
-    while (start - today).days < ESPN_HORIZON_DAYS:
-        end = start + timedelta(days=ESPN_CHUNK_DAYS)
-        chunks.append((start.strftime("%Y%m%d"), end.strftime("%Y%m%d")))
-        start = end + timedelta(days=1)
+    # Every calendar year the horizon touches. A year with nothing scheduled in it costs one
+    # request and answers 200 with no events, which is cheaper than working out in advance
+    # which years a competition runs in — and it keeps the list whole across New Year.
+    years = list(range(today.year, (today + timedelta(days=ESPN_HORIZON_DAYS)).year + 1))
 
     out: dict[tuple[str, str], tuple[str, str]] = {}
     fails = 0
     events = 0
     why: dict[str, int] = {}
     for slug in slugs:
-        for a, b in chunks:
-            url = (f"https://site.api.espn.com/apis/site/v2/sports/soccer/{slug}"
-                   f"/scoreboard?dates={a}-{b}")
+        for yr in years:
+            url = espn_scoreboard_url(slug, yr)
             try:
                 req = urllib.request.Request(url, headers={"User-Agent": ua})
                 data = json.loads(urllib.request.urlopen(req, timeout=30).read())
@@ -317,11 +330,11 @@ def fetch_espn_fixtures(gender: str) -> tuple[dict[tuple[str, str], tuple[str, s
                 key = tuple(sorted((na, nb)))
                 if key not in out or dt < out[key][0]:   # keep the earliest meeting
                     out[key] = (dt, comp_name)
-    total_reqs = len(slugs) * len(chunks)
+    total_reqs = len(slugs) * len(years)
     health = {"requests": total_reqs, "failed": fails, "events": events,
               "fixtures": len(out), "why": why}
     log(f"  ESPN {gender}: {len(out)} scheduled fixtures from {events} events "
-        f"({len(slugs)} comps x {len(chunks)} windows, {fails} failed requests"
+        f"({len(slugs)} comps x {len(years)} years, {fails} failed requests"
         + (f": {why}" if why else "") + ")")
     if total_reqs and fails == total_reqs:
         log(f"  WARNING: ESPN {gender} — ALL {total_reqs} requests failed ({why}); the feed "
