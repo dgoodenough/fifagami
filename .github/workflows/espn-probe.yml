@@ -2,7 +2,11 @@
 # The fixture feed has been empty since 2026-09-16 and the reason is only visible from a
 # machine that can reach ESPN. Delete once the question is answered.
 name: ESPN probe
+# Runs on push to this branch only: a workflow_dispatch trigger is not registered until
+# the file reaches the default branch, and this one is never going to get there.
 on:
+  push:
+    branches: ["claude/mirror-split-games-view-jsy6v0"]
   workflow_dispatch: {}
 jobs:
   probe:
