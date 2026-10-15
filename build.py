@@ -30,6 +30,7 @@ import csv
 import json
 import re
 import sys
+import urllib.error
 import urllib.request
 from collections import deque
 from datetime import date, datetime, timedelta
@@ -129,10 +130,16 @@ ESPN_SLUGS_WOMEN = [
     "uefa.weuro", "uefa.w.nations", "concacaf.womens.championship", "concacaf.w.gold",
     "conmebol.america.femenina", "caf.w.nations", "afc.w.asian.cup", "global.w.finalissima",
 ]
-# How far ahead to look. ESPN caps the window per request, so we fetch in ~120-day chunks;
-# 2 years is plenty to catch far-out tournaments without hammering the API.
+# How far ahead to look, and how to ask for it.
+#
+# This used to page through ~120-day `dates=YYYYMMDD-YYYYMMDD` windows. ESPN stopped
+# accepting date ranges some time around 2026-09-16 — every width now answers 400 Bad
+# Request, including a range of a single day — which emptied the fixture feed for a month.
+# A bare `dates=YYYY` still answers, and with an explicit limit it returns the whole
+# competition-year instead of the first hundred events. So the horizon is counted in
+# calendar years now, and a year arrives in one request instead of seven.
 ESPN_HORIZON_DAYS = 730
-ESPN_CHUNK_DAYS = 120
+ESPN_PAGE_LIMIT = 1000
 
 # ESPN displayName -> canonical member name (only the ones that differ).
 ESPN_ALIASES = {
@@ -256,35 +263,56 @@ def latest_match_date(results_file: str) -> str:
 
 
 # --- ESPN upcoming fixtures ---------------------------------------------------
-def fetch_espn_fixtures(gender: str) -> dict[tuple[str, str], tuple[str, str]]:
+def espn_scoreboard_url(slug: str, year: int) -> str:
+    """One competition-year of ESPN's scoreboard.
+
+    The two things that matter are both easy to undo by accident: `dates` takes a bare year
+    and nothing else (a range of any width answers 400), and without an explicit limit the
+    response stops at the first hundred events, which in a busy competition is March."""
+    return (f"https://site.api.espn.com/apis/site/v2/sports/soccer/{slug}"
+            f"/scoreboard?dates={year}&limit={ESPN_PAGE_LIMIT}")
+
+
+def fetch_espn_fixtures(gender: str) -> tuple[dict[tuple[str, str], tuple[str, str]], dict]:
     """Scheduled internationals from ESPN's public scoreboard, {(nameA, nameB): (date, comp)}.
     Names are ESPN displayNames run through ESPN_ALIASES (not yet validated against members).
-    Entirely best-effort: any slug/chunk failure is skipped so the build never breaks on ESPN."""
+    Entirely best-effort: any slug/chunk failure is skipped so the build never breaks on ESPN.
+
+    Also returns a health record. ESPN is the only source that routinely has anything —
+    martj42 lists fixtures in advance only around a tournament draw — so when it stops, the
+    whole upcoming feature stops with it, which is worth being able to tell apart from a
+    genuinely empty calendar. Reachable-but-yielding-nothing (a renamed league slug, say)
+    looks identical from the outside unless the requests are counted, so they are."""
     slugs = ESPN_SLUGS_MEN if gender == "men" else ESPN_SLUGS_WOMEN
     # ESPN's edge now 403s browser-like User-Agents (bot detection on fake "Mozilla" strings);
     # a plain curl UA passes. If they ever block this too, every request will 403 and the
     # all-requests-failed guard below will surface it instead of silently emptying the list.
     ua = "curl/8.4.0"
     today = date.today()
-    chunks = []
-    start = today
-    while (start - today).days < ESPN_HORIZON_DAYS:
-        end = start + timedelta(days=ESPN_CHUNK_DAYS)
-        chunks.append((start.strftime("%Y%m%d"), end.strftime("%Y%m%d")))
-        start = end + timedelta(days=1)
+    # Every calendar year the horizon touches. A year with nothing scheduled in it costs one
+    # request and answers 200 with no events, which is cheaper than working out in advance
+    # which years a competition runs in — and it keeps the list whole across New Year.
+    years = list(range(today.year, (today + timedelta(days=ESPN_HORIZON_DAYS)).year + 1))
 
     out: dict[tuple[str, str], tuple[str, str]] = {}
     fails = 0
+    events = 0
+    why: dict[str, int] = {}
     for slug in slugs:
-        for a, b in chunks:
-            url = (f"https://site.api.espn.com/apis/site/v2/sports/soccer/{slug}"
-                   f"/scoreboard?dates={a}-{b}")
+        for yr in years:
+            url = espn_scoreboard_url(slug, yr)
             try:
                 req = urllib.request.Request(url, headers={"User-Agent": ua})
                 data = json.loads(urllib.request.urlopen(req, timeout=30).read())
-            except Exception:  # noqa: BLE001
+            except urllib.error.HTTPError as e:
                 fails += 1
+                why[f"HTTP {e.code}"] = why.get(f"HTTP {e.code}", 0) + 1
                 continue
+            except Exception as e:  # noqa: BLE001
+                fails += 1
+                why[type(e).__name__] = why.get(type(e).__name__, 0) + 1
+                continue
+            events += len(data.get("events") or [])
             comp_name = ((data.get("leagues") or [{}])[0].get("name")
                          or slug).strip()
             for ev in data.get("events", []):
@@ -302,13 +330,20 @@ def fetch_espn_fixtures(gender: str) -> dict[tuple[str, str], tuple[str, str]]:
                 key = tuple(sorted((na, nb)))
                 if key not in out or dt < out[key][0]:   # keep the earliest meeting
                     out[key] = (dt, comp_name)
-    total_reqs = len(slugs) * len(chunks)
-    log(f"  ESPN {gender}: {len(out)} scheduled fixtures "
-        f"({len(slugs)} comps x {len(chunks)} windows, {fails} skipped requests)")
-    if fails == total_reqs and total_reqs:
-        log(f"  WARNING: ESPN {gender} — ALL {total_reqs} requests failed; the ESPN feed is "
-            f"down or blocking us (upcoming FIFAGami will rely on martj42 alone).")
-    return out
+    total_reqs = len(slugs) * len(years)
+    health = {"requests": total_reqs, "failed": fails, "events": events,
+              "fixtures": len(out), "why": why}
+    log(f"  ESPN {gender}: {len(out)} scheduled fixtures from {events} events "
+        f"({len(slugs)} comps x {len(years)} years, {fails} failed requests"
+        + (f": {why}" if why else "") + ")")
+    if total_reqs and fails == total_reqs:
+        log(f"  WARNING: ESPN {gender} — ALL {total_reqs} requests failed ({why}); the feed "
+            f"is down or blocking us (upcoming FIFAGami will rely on martj42 alone).")
+    elif not out:
+        log(f"  WARNING: ESPN {gender} — {total_reqs - fails} requests answered and returned "
+            f"{events} events, but no scheduled fixtures came out of them. If the answers "
+            f"are empty, the league slugs may have been renamed.")
+    return out, health
 
 
 # --- Step 2: canonical member table ------------------------------------------
@@ -1018,7 +1053,12 @@ def validate_artifacts(out: Path = OUT, docs: Path | None = None) -> list[str]:
                  f"upcoming {g}: ({lo},{hi}) is listed as a first meeting but has already met")
             need(len(when) == 10, f"upcoming {g}: ({lo},{hi}) has a malformed date {when!r}")
         if not upcoming.get(g):
-            notes.append(f"upcoming.json has no {g}'s fixtures - ESPN/martj42 may be down")
+            h = (upcoming.get("sources") or {}).get(g) or {}
+            notes.append(
+                f"upcoming.json has no {g}'s fixtures "
+                f"(ESPN: {h.get('failed', '?')}/{h.get('requests', '?')} requests failed, "
+                f"{h.get('events', '?')} events; martj42 listed {h.get('martj42', '?')}). "
+                f"The fixture feed is dead until a source answers.")
 
     feed = load(docs / "feed.json")
     need(feed.get("version", "").startswith("https://jsonfeed.org/"),
@@ -1071,7 +1111,46 @@ def derive_only() -> int:
 
 
 # --- Main --------------------------------------------------------------------
+def check_fixture_sources(out: Path = OUT) -> int:
+    """Exit non-zero when the upcoming feed has emptied out. Returns a process exit code.
+
+    Everything else the refresh commits comes from archives that are always there. The
+    fixture feed is the one part standing on a live third party, so it is the one part that
+    can go quietly to nothing — which it did, for a month, because an empty list is a
+    perfectly valid artifact and every check passed. With 211 members and two thirds of the
+    pairings never played, a genuinely empty two-year calendar does not happen; an empty one
+    means a source stopped answering.
+
+    The data is committed before this runs. The point is not to block the refresh — the
+    match archives should keep flowing whatever ESPN is doing — it is to turn the run red so
+    the failure notification actually fires."""
+    up = json.loads((out / "upcoming.json").read_text(encoding="utf-8"))
+    sources = up.get("sources") or {}
+    bad = []
+    for g in ("men", "women"):
+        if up.get(g):
+            continue
+        h = sources.get(g) or {}
+        bad.append(
+            f"{g}: no scheduled first meetings at all. ESPN answered "
+            f"{h.get('requests', 0) - h.get('failed', 0)}/{h.get('requests', '?')} requests"
+            + (f" (failures: {h['why']})" if h.get("why") else "")
+            + f" and returned {h.get('events', '?')} events; martj42 listed "
+              f"{h.get('martj42', '?')} fixtures in advance.")
+    if not bad:
+        log(f"  fixture sources OK: men {len(up['men'])}, women {len(up['women'])}")
+        return 0
+    for line in bad:
+        # A workflow annotation, so the reason survives into the run summary and the API.
+        print(f"::error title=Upcoming fixtures have no source::{line}", flush=True)
+    log("  The site still builds; the fixture feed, the Upcoming highlight and the RSS/JSON "
+        "feeds are empty until a source answers again.")
+    return 1
+
+
 def main() -> int:
+    if "--check-fixtures" in sys.argv:
+        return check_fixture_sources()
     if "--derive" in sys.argv:
         return derive_only()
 
@@ -1162,8 +1241,9 @@ def main() -> int:
     # further out, incl. women's). We emit every such fixture (with its date) and let the
     # client filter by the browser's current date, so the highlight stays accurate between
     # rebuilds. Sorted soonest-first.
-    def merge_espn(upcoming: dict, gender: str) -> tuple[dict, int, list]:
-        espn = fetch_espn_fixtures(gender)
+    def merge_espn(upcoming: dict, gender: str) -> tuple[dict, int, list, dict]:
+        espn, health = fetch_espn_fixtures(gender)
+        health["martj42"] = len(upcoming)          # what the archive listed in advance
         added, unknown = 0, []
         for (na, nb), (dt, comp) in espn.items():
             ia, ib = name_to_id.get(na), name_to_id.get(nb)
@@ -1175,10 +1255,10 @@ def main() -> int:
                 if key not in upcoming:
                     added += 1
                 upcoming[key] = (dt, comp)
-        return upcoming, added, sorted(set(unknown))
+        return upcoming, added, sorted(set(unknown)), health
 
-    men_up, men_added, men_unk = merge_espn(men_up, "men")
-    wom_up, wom_added, wom_unk = merge_espn(wom_up, "women")
+    men_up, men_added, men_unk, men_health = merge_espn(men_up, "men")
+    wom_up, wom_added, wom_unk, wom_health = merge_espn(wom_up, "women")
     log(f"  ESPN merge: +{men_added} men's, +{wom_added} women's fixtures beyond martj42")
     for g, unk in (("men", men_unk), ("women", wom_unk)):
         if unk:
@@ -1189,7 +1269,11 @@ def main() -> int:
         out = [[lo, hi, d, t] for (lo, hi), (d, t) in upcoming.items() if (lo, hi) not in played]
         return sorted(out, key=lambda r: r[2])
     upcoming_json = {"men": upcoming_gami(men_up, men_pairs),
-                     "women": upcoming_gami(wom_up, wom_pairs)}
+                     "women": upcoming_gami(wom_up, wom_pairs),
+                     # How the two sources actually fared. Without it an empty calendar and
+                     # a dead feed are the same file, and the site cannot tell the visitor
+                     # which one it is looking at.
+                     "sources": {"men": men_health, "women": wom_health}}
     (OUT / "upcoming.json").write_text(json.dumps(upcoming_json, ensure_ascii=False),
                                        encoding="utf-8")
 

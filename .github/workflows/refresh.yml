@@ -64,3 +64,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
+
+      # The upcoming-fixtures feature stands on live third-party endpoints, and when they
+      # stop answering it empties out without breaking anything else — which is how it
+      # shipped blank for a month. It runs dead last — after the commit and
+      # the Pages build — because it fails the job, and the archives must keep flowing and
+      # the site must still redeploy whatever ESPN is doing.
+      - name: Check the fixture sources are still answering
+        run: python build.py --check-fixtures

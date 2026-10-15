@@ -28,6 +28,7 @@ const S = {
   maxCount: { men: 1, women: 1 },
   matches: { men: null, women: null },   // per-meeting detail, lazy-loaded on first click
   upcoming: { men: new Map(), women: new Map() }, // scheduled first meetings (key -> [date, tourn])
+  upcomingSources: null,             // how the fixture sources fared at build time
   yearsByPair: { men: null, women: null }, // key -> sorted meeting years (slim years_*.json)
   undated: { men: {}, women: {} },   // key -> meetings whose source row has no usable date
   debut: { men: new Map(), women: new Map() },  // team id -> year of its first ever match
@@ -267,6 +268,7 @@ async function load() {
       S.upcoming[g].set(`${i},${j}`, [date, tourn]);
     }
   }
+  S.upcomingSources = upcoming.sources || null;
   const d = new Date();   // the machine's current date drives which fixtures are still upcoming
   S.today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
@@ -1761,10 +1763,16 @@ function renderFixtures() {
   }
 
   if (!groups.length) {
-    host.innerHTML = `<div class="lv-empty"><p>No first-ever meetings are on the calendar
-      ${isFiltered() ? "for the teams in the current filter" : "right now"}.</p>
-      <p class="hint">Fixtures come from martj42's advance listings and ESPN's scoreboard,
-      up to two years out.</p></div>`;
+    host.innerHTML = fixtureSourcesDown() && !isFiltered()
+      ? `<div class="lv-empty"><p>The fixture sources are not answering.</p>
+         <p class="hint">Scheduled games come from martj42's advance listings and ESPN's
+         scoreboard, and neither returned anything when this data was last built — so this
+         is not an empty calendar, it is a missing one. The grid, the head-to-heads and
+         everything else on the page are unaffected.</p></div>`
+      : `<div class="lv-empty"><p>No first-ever meetings are on the calendar
+         ${isFiltered() ? "for the teams in the current filter" : "right now"}.</p>
+         <p class="hint">Fixtures come from martj42's advance listings and ESPN's scoreboard,
+         up to two years out.</p></div>`;
     return;
   }
 
@@ -1788,6 +1796,23 @@ function renderFixtures() {
       }).join("")
       + `</div>`).join("");
   wireRows(host);
+}
+
+/* Did the fixture feed come back empty because nothing is scheduled, or because the
+   sources stopped answering?
+
+   In the data those are the same file, and for a month the site said the calendar was
+   clear when really nothing had asked it. The build records how each source fared, so the
+   page can tell a visitor which of the two it is looking at. */
+function fixtureSourcesDown() {
+  const src = S.upcomingSources;
+  if (!src) return false;
+  return ["men", "women"].some(g => {
+    const h = src[g];
+    if (!h) return false;
+    const espnSilent = (h.requests && h.failed === h.requests) || !h.fixtures;
+    return espnSilent && !h.martj42;
+  });
 }
 
 /* One-offs — pairs that met exactly once and never again. */
@@ -2081,6 +2106,12 @@ function headlineFixtures(headline) {
     }
   }
   if (!n) {
+    if (fixtureSourcesDown() && !isFiltered()) {
+      headline.innerHTML = `<span class="big">—</span>`
+        + `<span class="rest">the <b>fixture sources</b> are not answering, so the calendar `
+        + `is missing rather than empty.</span>`;
+      return;
+    }
     headline.innerHTML = `<span class="big">0</span>`
       + `<span class="rest">first-ever meetings are on the calendar`
       + `${esc(isFiltered() ? " for the teams in the current filter" : " right now")}.</span>`;
