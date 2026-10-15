@@ -193,6 +193,36 @@ class TestUpcoming(unittest.TestCase):
             self.assertEqual(dates, sorted(dates))
 
 
+class TestFixtureSourceCheck(unittest.TestCase):
+    """The refresh commits whatever the build produced, and an empty fixture list is a
+    perfectly valid artifact — which is how the feature shipped blank for a month without
+    one check going red. check_fixture_sources is the thing that now notices."""
+
+    def _artifact(self, payload):
+        import tempfile
+        d = Path(tempfile.mkdtemp())
+        (d / "upcoming.json").write_text(json.dumps(payload), encoding="utf-8")
+        return d
+
+    def test_passes_when_both_archives_have_fixtures(self):
+        d = self._artifact({"men": [[1, 2, "2030-01-01", "Friendly"]],
+                            "women": [[3, 4, "2030-02-02", "Friendly"]]})
+        self.assertEqual(build.check_fixture_sources(d), 0)
+
+    def test_fails_when_an_archive_is_empty(self):
+        for payload in ({"men": [], "women": [[3, 4, "2030-02-02", "F"]]},
+                        {"men": [[1, 2, "2030-01-01", "F"]], "women": []},
+                        {"men": [], "women": []}):
+            with self.subTest(payload=payload):
+                self.assertEqual(build.check_fixture_sources(self._artifact(payload)), 1)
+
+    def test_survives_an_artifact_written_before_source_health_existed(self):
+        """The committed upcoming.json predates the `sources` block; the check still has to
+        reach a verdict rather than blow up on the missing key."""
+        d = self._artifact({"men": [], "women": []})
+        self.assertEqual(build.check_fixture_sources(d), 1)
+
+
 class TestFeeds(unittest.TestCase):
     def test_json_feed_shape(self):
         feed = json.loads((ROOT / "docs" / "feed.json").read_text(encoding="utf-8"))

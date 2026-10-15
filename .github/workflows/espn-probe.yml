@@ -1,0 +1,16 @@
+# TEMPORARY. Probes the ESPN scoreboard from a GitHub runner and reports what it says.
+# The fixture feed has been empty since 2026-09-16 and the reason is only visible from a
+# machine that can reach ESPN. Delete once the question is answered.
+name: ESPN probe
+on:
+  workflow_dispatch: {}
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Ask ESPN what is going on
+        run: python probe_espn.py
