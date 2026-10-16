@@ -6,12 +6,12 @@
     <description>Scheduled fixtures between national teams that have never played each other, from FIFAGami.</description>
     <language>en</language>
     <atom:link href="https://dgoodenough.github.io/fifagami/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Thu, 15 Oct 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 16 Oct 2026 00:00:00 +0000</lastBuildDate>
     <item>
       <title>Singapore v Paraguay - first ever men's meeting</title>
       <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=28,140</link>
       <guid isPermaLink="false">fifagami-men-28-140-2026-11-13</guid>
-      <pubDate>Thu, 15 Oct 2026 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 16 Oct 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
       <description>Singapore and Paraguay have never played a men's international against each other. They are scheduled to meet for the first time on 2026-11-13 (International Friendly).</description>
     </item>
@@ -19,15 +19,23 @@
       <title>Singapore v Brazil - first ever men's meeting</title>
       <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=men&amp;up=1&amp;pair=28,136</link>
       <guid isPermaLink="false">fifagami-men-28-136-2026-11-17</guid>
-      <pubDate>Thu, 15 Oct 2026 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 16 Oct 2026 00:00:00 +0000</pubDate>
       <category>International Friendly</category>
       <description>Singapore and Brazil have never played a men's international against each other. They are scheduled to meet for the first time on 2026-11-17 (International Friendly).</description>
+    </item>
+    <item>
+      <title>Venezuela v France - first ever women's meeting</title>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=141,157</link>
+      <guid isPermaLink="false">fifagami-women-141-157-2026-11-27</guid>
+      <pubDate>Fri, 16 Oct 2026 00:00:00 +0000</pubDate>
+      <category>Women's International Friendly</category>
+      <description>Venezuela and France have never played a women's international against each other. They are scheduled to meet for the first time on 2026-11-27 (Women's International Friendly).</description>
     </item>
     <item>
       <title>Liechtenstein v San Marino - first ever women's meeting</title>
       <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=209,210</link>
       <guid isPermaLink="false">fifagami-women-209-210-2026-11-28</guid>
-      <pubDate>Thu, 15 Oct 2026 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 16 Oct 2026 00:00:00 +0000</pubDate>
       <category>Women's International Friendly</category>
       <description>Liechtenstein and San Marino have never played a women's international against each other. They are scheduled to meet for the first time on 2026-11-28 (Women's International Friendly).</description>
     </item>
@@ -35,15 +43,23 @@
       <title>United States v El Salvador - first ever women's meeting</title>
       <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=101,110</link>
       <guid isPermaLink="false">fifagami-women-101-110-2026-11-28</guid>
-      <pubDate>Thu, 15 Oct 2026 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 16 Oct 2026 00:00:00 +0000</pubDate>
       <category>Concacaf W Championship</category>
       <description>United States and El Salvador have never played a women's international against each other. They are scheduled to meet for the first time on 2026-11-28 (Concacaf W Championship).</description>
+    </item>
+    <item>
+      <title>Morocco v Venezuela - first ever women's meeting</title>
+      <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=46,141</link>
+      <guid isPermaLink="false">fifagami-women-46-141-2026-12-01</guid>
+      <pubDate>Fri, 16 Oct 2026 00:00:00 +0000</pubDate>
+      <category>Women's International Friendly</category>
+      <description>Morocco and Venezuela have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-01 (Women's International Friendly).</description>
     </item>
     <item>
       <title>Gibraltar v San Marino - first ever women's meeting</title>
       <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=208,210</link>
       <guid isPermaLink="false">fifagami-women-208-210-2026-12-05</guid>
-      <pubDate>Thu, 15 Oct 2026 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 16 Oct 2026 00:00:00 +0000</pubDate>
       <category>Women's International Friendly</category>
       <description>Gibraltar and San Marino have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-05 (Women's International Friendly).</description>
     </item>
@@ -51,7 +67,7 @@
       <title>Zambia v Denmark - first ever women's meeting</title>
       <link>https://dgoodenough.github.io/fifagami/?view=fixtures&amp;g=women&amp;up=1&amp;pair=65,167</link>
       <guid isPermaLink="false">fifagami-women-65-167-2026-12-05</guid>
-      <pubDate>Thu, 15 Oct 2026 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 16 Oct 2026 00:00:00 +0000</pubDate>
       <category>Women's International Friendly</category>
       <description>Zambia and Denmark have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-05 (Women's International Friendly).</description>
     </item>
