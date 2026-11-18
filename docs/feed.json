@@ -6,77 +6,11 @@
  "description": "Scheduled fixtures between national teams that have never played each other, from FIFAGami.",
  "items": [
   {
-   "id": "fifagami-men-61-92-2026-11-17",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=men&up=1&pair=61,92",
-   "title": "Angola v South Sudan - first ever men's meeting",
-   "content_text": "Angola and South Sudan have never played a men's international against each other. They are scheduled to meet for the first time on 2026-11-17 (Africa Cup of Nations Qualifying).",
-   "date_published": "2026-11-17T00:00:00Z",
-   "tags": [
-    "men",
-    "Africa Cup of Nations Qualifying"
-   ]
-  },
-  {
-   "id": "fifagami-men-69-84-2026-11-17",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=men&up=1&pair=69,84",
-   "title": "Comoros v Congo - first ever men's meeting",
-   "content_text": "Comoros and Congo have never played a men's international against each other. They are scheduled to meet for the first time on 2026-11-17 (Africa Cup of Nations Qualifying).",
-   "date_published": "2026-11-17T00:00:00Z",
-   "tags": [
-    "men",
-    "Africa Cup of Nations Qualifying"
-   ]
-  },
-  {
-   "id": "fifagami-men-23-105-2026-11-17",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=men&up=1&pair=23,105",
-   "title": "Kuwait v Honduras - first ever men's meeting",
-   "content_text": "Kuwait and Honduras have never played a men's international against each other. They are scheduled to meet for the first time on 2026-11-17 (International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
-   "tags": [
-    "men",
-    "International Friendly"
-   ]
-  },
-  {
-   "id": "fifagami-men-68-80-2026-11-17",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=men&up=1&pair=68,80",
-   "title": "Madagascar v Guinea-Bissau - first ever men's meeting",
-   "content_text": "Madagascar and Guinea-Bissau have never played a men's international against each other. They are scheduled to meet for the first time on 2026-11-17 (Africa Cup of Nations Qualifying).",
-   "date_published": "2026-11-17T00:00:00Z",
-   "tags": [
-    "men",
-    "Africa Cup of Nations Qualifying"
-   ]
-  },
-  {
-   "id": "fifagami-men-28-136-2026-11-17",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=men&up=1&pair=28,136",
-   "title": "Singapore v Brazil - first ever men's meeting",
-   "content_text": "Singapore and Brazil have never played a men's international against each other. They are scheduled to meet for the first time on 2026-11-17 (International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
-   "tags": [
-    "men",
-    "International Friendly"
-   ]
-  },
-  {
-   "id": "fifagami-men-141-171-2026-11-17",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=men&up=1&pair=141,171",
-   "title": "Venezuela v Russia - first ever men's meeting",
-   "content_text": "Venezuela and Russia have never played a men's international against each other. They are scheduled to meet for the first time on 2026-11-17 (International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
-   "tags": [
-    "men",
-    "International Friendly"
-   ]
-  },
-  {
-   "id": "fifagami-women-113-143-2026-11-27",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=113,143",
+   "id": "fifagami-women-114-143-2026-11-27",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=114,143",
    "title": "Dominican Republic v Peru - first ever women's meeting",
    "content_text": "Dominican Republic and Peru have never played a women's international against each other. They are scheduled to meet for the first time on 2026-11-27 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
@@ -87,7 +21,7 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=141,157",
    "title": "Venezuela v France - first ever women's meeting",
    "content_text": "Venezuela and France have never played a women's international against each other. They are scheduled to meet for the first time on 2026-11-27 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
@@ -98,18 +32,18 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=142,156",
    "title": "Chile v Spain - first ever women's meeting",
    "content_text": "Chile and Spain have never played a women's international against each other. They are scheduled to meet for the first time on 2026-11-28 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
    ]
   },
   {
-   "id": "fifagami-women-59-139-2026-11-28",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=59,139",
+   "id": "fifagami-women-58-139-2026-11-28",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=58,139",
    "title": "Ghana v Ecuador - first ever women's meeting",
    "content_text": "Ghana and Ecuador have never played a women's international against each other. They are scheduled to meet for the first time on 2026-11-28 (FIFA Women's World Cup Qualifying - Playoff Tournament).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "FIFA Women's World Cup Qualifying - Playoff Tournament"
@@ -120,29 +54,29 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=209,210",
    "title": "Liechtenstein v San Marino - first ever women's meeting",
    "content_text": "Liechtenstein and San Marino have never played a women's international against each other. They are scheduled to meet for the first time on 2026-11-28 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
    ]
   },
   {
-   "id": "fifagami-women-83-186-2026-11-28",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=83,186",
+   "id": "fifagami-women-82-186-2026-11-28",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=82,186",
    "title": "Malawi v Albania - first ever women's meeting",
    "content_text": "Malawi and Albania have never played a women's international against each other. They are scheduled to meet for the first time on 2026-11-28 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
    ]
   },
   {
-   "id": "fifagami-women-33-55-2026-11-28",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=33,55",
+   "id": "fifagami-women-34-55-2026-11-28",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=34,55",
    "title": "Taiwan v South Africa - first ever women's meeting",
    "content_text": "Taiwan and South Africa have never played a women's international against each other. They are scheduled to meet for the first time on 2026-11-28 (FIFA Women's World Cup Qualifying - Playoff Tournament).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "FIFA Women's World Cup Qualifying - Playoff Tournament"
@@ -153,7 +87,7 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=101,110",
    "title": "United States v El Salvador - first ever women's meeting",
    "content_text": "United States and El Salvador have never played a women's international against each other. They are scheduled to meet for the first time on 2026-11-28 (Concacaf W Championship).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Concacaf W Championship"
@@ -164,7 +98,7 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=5,151",
    "title": "Uzbekistan v Papua New Guinea - first ever women's meeting",
    "content_text": "Uzbekistan and Papua New Guinea have never played a women's international against each other. They are scheduled to meet for the first time on 2026-11-28 (FIFA Women's World Cup Qualifying - Playoff Tournament).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "FIFA Women's World Cup Qualifying - Playoff Tournament"
@@ -175,7 +109,7 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=53,169",
    "title": "Cameroon v Turkey - first ever women's meeting",
    "content_text": "Cameroon and Turkey have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-01 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
@@ -186,7 +120,7 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=14,186",
    "title": "China v Albania - first ever women's meeting",
    "content_text": "China and Albania have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-01 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
@@ -197,7 +131,7 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=46,141",
    "title": "Morocco v Venezuela - first ever women's meeting",
    "content_text": "Morocco and Venezuela have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-01 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
@@ -208,73 +142,73 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=55,139",
    "title": "South Africa v Ecuador - first ever women's meeting",
    "content_text": "South Africa and Ecuador have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-01 (FIFA Women's World Cup Qualifying - Playoff Tournament).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "FIFA Women's World Cup Qualifying - Playoff Tournament"
    ]
   },
   {
-   "id": "fifagami-women-13-83-2026-12-01",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=13,83",
+   "id": "fifagami-women-12-82-2026-12-01",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=12,82",
    "title": "Thailand v Malawi - first ever women's meeting",
    "content_text": "Thailand and Malawi have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-01 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
    ]
   },
   {
-   "id": "fifagami-women-5-59-2026-12-01",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=5,59",
+   "id": "fifagami-women-5-58-2026-12-01",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=5,58",
    "title": "Uzbekistan v Ghana - first ever women's meeting",
    "content_text": "Uzbekistan and Ghana have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-01 (FIFA Women's World Cup Qualifying - Playoff Tournament).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "FIFA Women's World Cup Qualifying - Playoff Tournament"
    ]
   },
   {
-   "id": "fifagami-women-193-205-2026-12-02",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=193,205",
+   "id": "fifagami-women-192-205-2026-12-02",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=192,205",
    "title": "Montenegro v Moldova - first ever women's meeting",
    "content_text": "Montenegro and Moldova have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-02 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
    ]
   },
   {
-   "id": "fifagami-women-14-83-2026-12-04",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=14,83",
+   "id": "fifagami-women-14-82-2026-12-04",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=14,82",
    "title": "China v Malawi - first ever women's meeting",
    "content_text": "China and Malawi have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-04 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
    ]
   },
   {
-   "id": "fifagami-women-143-163-2026-12-04",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=143,163",
+   "id": "fifagami-women-143-162-2026-12-04",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=143,162",
    "title": "Peru v Germany - first ever women's meeting",
    "content_text": "Peru and Germany have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-04 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
    ]
   },
   {
-   "id": "fifagami-women-13-186-2026-12-04",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=13,186",
+   "id": "fifagami-women-12-186-2026-12-04",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=12,186",
    "title": "Thailand v Albania - first ever women's meeting",
    "content_text": "Thailand and Albania have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-04 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
@@ -285,18 +219,18 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=141,156",
    "title": "Venezuela v Spain - first ever women's meeting",
    "content_text": "Venezuela and Spain have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-04 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
    ]
   },
   {
-   "id": "fifagami-women-59-151-2026-12-05",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=59,151",
+   "id": "fifagami-women-58-151-2026-12-05",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=58,151",
    "title": "Ghana v Papua New Guinea - first ever women's meeting",
    "content_text": "Ghana and Papua New Guinea have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-05 (FIFA Women's World Cup Qualifying - Playoff Tournament).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "FIFA Women's World Cup Qualifying - Playoff Tournament"
@@ -307,18 +241,18 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=208,210",
    "title": "Gibraltar v San Marino - first ever women's meeting",
    "content_text": "Gibraltar and San Marino have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-05 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
    ]
   },
   {
-   "id": "fifagami-women-33-139-2026-12-05",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=33,139",
+   "id": "fifagami-women-34-139-2026-12-05",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=34,139",
    "title": "Taiwan v Ecuador - first ever women's meeting",
    "content_text": "Taiwan and Ecuador have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-05 (FIFA Women's World Cup Qualifying - Playoff Tournament).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "FIFA Women's World Cup Qualifying - Playoff Tournament"
@@ -329,18 +263,18 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=65,167",
    "title": "Zambia v Denmark - first ever women's meeting",
    "content_text": "Zambia and Denmark have never played a women's international against each other. They are scheduled to meet for the first time on 2026-12-05 (Women's International Friendly).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "Women's International Friendly"
    ]
   },
   {
-   "id": "fifagami-women-202-209-2027-03-02",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=202,209",
+   "id": "fifagami-women-201-209-2027-03-02",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=201,209",
    "title": "Azerbaijan v Liechtenstein - first ever women's meeting",
    "content_text": "Azerbaijan and Liechtenstein have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-02 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
@@ -351,51 +285,51 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=183,196",
    "title": "Bosnia and Herzegovina v Luxembourg - first ever women's meeting",
    "content_text": "Bosnia and Herzegovina and Luxembourg have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-02 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
    ]
   },
   {
-   "id": "fifagami-women-199-210-2027-03-02",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=199,210",
+   "id": "fifagami-women-198-210-2027-03-02",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=198,210",
    "title": "Estonia v San Marino - first ever women's meeting",
    "content_text": "Estonia and San Marino have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-02 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
    ]
   },
   {
-   "id": "fifagami-women-176-180-2027-03-02",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=176,180",
+   "id": "fifagami-women-175-181-2027-03-02",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=175,181",
    "title": "Greece v Czech Republic - first ever women's meeting",
    "content_text": "Greece and Czech Republic have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-02 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
    ]
   },
   {
-   "id": "fifagami-women-174-191-2027-03-02",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=174,191",
+   "id": "fifagami-women-173-193-2027-03-02",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=173,193",
    "title": "Hungary v Kosovo - first ever women's meeting",
    "content_text": "Hungary and Kosovo have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-02 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
    ]
   },
   {
-   "id": "fifagami-women-192-201-2027-03-02",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=192,201",
+   "id": "fifagami-women-191-200-2027-03-02",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=191,200",
    "title": "Israel v Faroe Islands - first ever women's meeting",
    "content_text": "Israel and Faroe Islands have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-02 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
@@ -406,29 +340,29 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=172,204",
    "title": "Ukraine v Lithuania - first ever women's meeting",
    "content_text": "Ukraine and Lithuania have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-02 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
    ]
   },
   {
-   "id": "fifagami-women-176-204-2027-03-06",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=176,204",
+   "id": "fifagami-women-175-204-2027-03-06",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=175,204",
    "title": "Greece v Lithuania - first ever women's meeting",
    "content_text": "Greece and Lithuania have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-06 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
    ]
   },
   {
-   "id": "fifagami-women-174-181-2027-03-06",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=174,181",
+   "id": "fifagami-women-173-180-2027-03-06",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=173,180",
    "title": "Hungary v Slovenia - first ever women's meeting",
    "content_text": "Hungary and Slovenia have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-06 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
@@ -439,7 +373,7 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=203,209",
    "title": "Latvia v Liechtenstein - first ever women's meeting",
    "content_text": "Latvia and Liechtenstein have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-06 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
@@ -450,18 +384,18 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=196,210",
    "title": "Luxembourg v San Marino - first ever women's meeting",
    "content_text": "Luxembourg and San Marino have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-06 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
    ]
   },
   {
-   "id": "fifagami-women-193-197-2027-03-06",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=193,197",
+   "id": "fifagami-women-192-197-2027-03-06",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=192,197",
    "title": "Montenegro v Armenia - first ever women's meeting",
    "content_text": "Montenegro and Armenia have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-06 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
@@ -472,7 +406,7 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=178,186",
    "title": "Serbia v Albania - first ever women's meeting",
    "content_text": "Serbia and Albania have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-06 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
@@ -483,18 +417,18 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=179,194",
    "title": "Slovakia v Bulgaria - first ever women's meeting",
    "content_text": "Slovakia and Bulgaria have never played a women's international against each other. They are scheduled to meet for the first time on 2027-03-06 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
    ]
   },
   {
-   "id": "fifagami-women-202-203-2027-04-20",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=202,203",
+   "id": "fifagami-women-201-203-2027-04-20",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=201,203",
    "title": "Azerbaijan v Latvia - first ever women's meeting",
    "content_text": "Azerbaijan and Latvia have never played a women's international against each other. They are scheduled to meet for the first time on 2027-04-20 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
@@ -505,7 +439,7 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=183,210",
    "title": "Bosnia and Herzegovina v San Marino - first ever women's meeting",
    "content_text": "Bosnia and Herzegovina and San Marino have never played a women's international against each other. They are scheduled to meet for the first time on 2027-04-20 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
@@ -516,18 +450,18 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=189,209",
    "title": "Georgia v Liechtenstein - first ever women's meeting",
    "content_text": "Georgia and Liechtenstein have never played a women's international against each other. They are scheduled to meet for the first time on 2027-04-20 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
    ]
   },
   {
-   "id": "fifagami-women-187-192-2027-04-20",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=187,192",
+   "id": "fifagami-women-188-191-2027-04-20",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=188,191",
    "title": "North Macedonia v Israel - first ever women's meeting",
    "content_text": "North Macedonia and Israel have never played a women's international against each other. They are scheduled to meet for the first time on 2027-04-20 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
@@ -538,18 +472,18 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=185,190",
    "title": "Northern Ireland v Finland - first ever women's meeting",
    "content_text": "Northern Ireland and Finland have never played a women's international against each other. They are scheduled to meet for the first time on 2027-04-20 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
    ]
   },
   {
-   "id": "fifagami-women-193-198-2027-04-24",
-   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=193,198",
+   "id": "fifagami-women-192-199-2027-04-24",
+   "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=192,199",
    "title": "Montenegro v Kazakhstan - first ever women's meeting",
    "content_text": "Montenegro and Kazakhstan have never played a women's international against each other. They are scheduled to meet for the first time on 2027-04-24 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
@@ -560,7 +494,7 @@
    "url": "https://dgoodenough.github.io/fifagami/?view=fixtures&g=women&up=1&pair=178,184",
    "title": "Serbia v Romania - first ever women's meeting",
    "content_text": "Serbia and Romania have never played a women's international against each other. They are scheduled to meet for the first time on 2027-04-24 (UEFA Women's Nations League).",
-   "date_published": "2026-11-17T00:00:00Z",
+   "date_published": "2026-11-18T00:00:00Z",
    "tags": [
     "women",
     "UEFA Women's Nations League"
